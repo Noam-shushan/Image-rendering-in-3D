@@ -68,6 +68,9 @@ public class Vector {
      * @return new Vector with the value of (scalar * x, scalar * y, scalar * z)
      */
     public Vector scale(double scalar){
+        if(Double.compare(scalar, 0d) == 0){
+            throw new IllegalArgumentException("scaling factor == 0");
+        }
         return new Vector(new Point3D(
                 _head._x._coord * scalar,
                 _head._y._coord * scalar,
@@ -151,6 +154,6 @@ public class Vector {
      * @return head
      */
     public Point3D getHead() {
-        return _head;
+        return new Point3D(_head._x, _head._y, _head._z);
     }
 }

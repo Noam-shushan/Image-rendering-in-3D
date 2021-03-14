@@ -20,6 +20,19 @@ public class Ray {
         _dir = dir.normalized();
     }
 
+    public Point3D getP0() {
+        return _p0;
+    }
+
+    public Vector getDir() {
+        return _dir;
+    }
+
+    @Override
+    public String toString() {
+        return "p0 = " + _p0 + ", direction = " + _dir;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

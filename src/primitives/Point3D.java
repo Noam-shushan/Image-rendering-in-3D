@@ -10,7 +10,7 @@ public class Point3D {
     final Coordinate _z; // z axis
 
     // a zero constants
-    final static Point3D ZERO = new Point3D(0d, 0d, 0d);
+    public final static Point3D ZERO = new Point3D(0d, 0d, 0d);
 
     /**
      * Constructor for Point3D
@@ -20,7 +20,9 @@ public class Point3D {
      * @param z y coordinate
      */
     public Point3D(Coordinate x, Coordinate y, Coordinate z) {
-        this(x._coord, y._coord, z._coord); // use the second constructor
+        _x = x;
+        _y = y;
+        _z = z;
     }
 
     /**
@@ -51,14 +53,14 @@ public class Point3D {
     /**
      * subtract tow Point3D
      * @param other the other point to subtract from this point
-     * @return new Vector with the value of (x2 - x1, y2 - y1, z2 - z1)
+     * @return new Vector with the value of (x1 - x2, y1 - y2, z1 - z2)
      */
     public Vector subtract(Point3D other) {
         return new Vector(
                 new Point3D(
-                        other._x._coord - _x._coord,
-                        other._y._coord - _y._coord,
-                        other._z._coord - _z._coord));
+                        _x._coord - other._x._coord,
+                        _y._coord - other._y._coord,
+                        _z._coord - other._z._coord));
     }
 
     /**
