@@ -3,6 +3,11 @@ package geometries;
 import primitives.Point3D;
 import primitives.Vector;
 
+/**
+ * this class present a Plane
+ *
+ * @author Noam Shushan
+ */
 public class Plane implements Geometry {
 
     final Point3D _q0;
@@ -28,9 +33,6 @@ public class Plane implements Geometry {
      */
     public Plane(Point3D p1, Point3D p2, Point3D p3) {
         _q0 = p1;
-//        //TODO check direction of vectors
-//        Vector U = p1.subtract(p2);
-//        Vector V = p3.subtract(p2);
 
         Vector U = p2.subtract(p1);
         Vector V = p3.subtract(p1);
@@ -39,7 +41,6 @@ public class Plane implements Geometry {
 
         N.normalize();
 
-        //right hand rule
         _normal = N;
     }
 
@@ -52,5 +53,10 @@ public class Plane implements Geometry {
     @Override
     public Vector getNormal(Point3D point) {
         return _normal;
+    }
+
+    @Override
+    public String toString() {
+        return "q0 = " + _q0 + ", normal = " + _normal;
     }
 }

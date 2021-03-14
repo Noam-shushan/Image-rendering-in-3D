@@ -2,6 +2,11 @@ package geometries;
 
 import primitives.*;
 
+/**
+ * this is a class present a Cylinder
+ *
+ * @author Noam Shushan
+ */
 public class Cylinder extends Tube{
     final double _height; // the height of the Cylinder
 
