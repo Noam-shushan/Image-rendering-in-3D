@@ -21,15 +21,6 @@ public class Cylinder extends Tube{
         _height = height;
     }
 
-    /**
-     * @param point should be null for flat geometries
-     * @return
-     */
-    @Override
-    public Vector getNormal(Point3D point){
-        return null;
-    }
-
     @Override
     public String toString() {
         return "height = " + _height +
