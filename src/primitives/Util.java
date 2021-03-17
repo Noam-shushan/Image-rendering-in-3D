@@ -67,6 +67,11 @@ public abstract class Util {
         return Math.random() * (max - min) + min;
     }
 
+    /**
+     * square
+     * @param x
+     * @return x * x
+     */
     public static double square(double x) {
         return x * x;
     }

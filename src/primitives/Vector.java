@@ -1,7 +1,5 @@
 package primitives;
 
-import java.util.Objects;
-
 /**
  * this is a class to present a Vector of 3D
  * @author Noam shushan
@@ -17,7 +15,7 @@ public class Vector {
      * @param z z coordinate
      */
     public Vector(Coordinate x, Coordinate y, Coordinate z){
-        this(new Point3D(x,y,z));
+        this(new Point3D(x, y, z));
     }
 
     /**
@@ -28,7 +26,7 @@ public class Vector {
      * @param z z value
      */
     public Vector(double x, double y, double z){
-        this(new Point3D(x,y,z));
+        this(new Point3D(x, y, z));
     }
 
     /**
@@ -68,9 +66,6 @@ public class Vector {
      * @return new Vector with the value of (scalar * x, scalar * y, scalar * z)
      */
     public Vector scale(double scalar){
-        if(Double.compare(scalar, 0d) == 0){
-            throw new IllegalArgumentException("scaling factor == 0");
-        }
         return new Vector(new Point3D(
                 _head._x._coord * scalar,
                 _head._y._coord * scalar,
@@ -141,7 +136,7 @@ public class Vector {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Vector vector = (Vector) o;
-        return Objects.equals(_head, vector._head);
+        return _head.equals(vector._head);
     }
 
     @Override

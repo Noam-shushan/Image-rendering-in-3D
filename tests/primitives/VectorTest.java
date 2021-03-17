@@ -12,6 +12,7 @@ import static primitives.Util.isZero;
  * @author Noam shushan 314717588
  */
 class VectorTest {
+
     Vector v1 = new Vector(1, 2, 3);
     Vector v2 = new Vector(-2, -4, -6);
 
