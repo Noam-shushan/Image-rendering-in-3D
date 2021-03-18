@@ -14,19 +14,6 @@ public class Point3D {
 
     /**
      * Constructor for Point3D
-     * generate an object of Point3D from 3 Coordinate's
-     * @param x x coordinate
-     * @param y y coordinate
-     * @param z y coordinate
-     */
-    public Point3D(Coordinate x, Coordinate y, Coordinate z) {
-        _x = x;
-        _y = y;
-        _z = z;
-    }
-
-    /**
-     * Constructor for Point3D
      * generate an object of Point3D from 3 axis values
      * @param x x value
      * @param y y value
@@ -94,5 +81,17 @@ public class Point3D {
     @Override
     public String toString() {
         return "(" + _x + ", " + _y + ", " + _z + ')';
+    }
+
+    public double getX() {
+        return _x._coord;
+    }
+
+    public double getY() {
+        return _y._coord;
+    }
+
+    public double getZ() {
+        return _z._coord;
     }
 }

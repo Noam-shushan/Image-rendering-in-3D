@@ -16,9 +16,14 @@ public class Cylinder extends Tube{
      * @param radius
      * @param height
      */
-    public Cylinder(Ray axisRay, double radius, double height) {
-        super(axisRay, radius);
+    public Cylinder(double radius, Ray axisRay, double height) {
+        super(radius ,axisRay);
         _height = height;
+    }
+
+    @Override
+    public Vector getNormal(Point3D point) {
+        return super.getNormal(point);
     }
 
     @Override

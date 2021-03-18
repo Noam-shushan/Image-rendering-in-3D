@@ -7,7 +7,7 @@ import primitives.Vector;
  * interface for all the geometries that have a normal from them
  * @author Noam Shushan
  */
-public interface Geometry {
+public interface Geometry extends Intersectable {
     /**
      *
      * @param point should be null for flat geometries

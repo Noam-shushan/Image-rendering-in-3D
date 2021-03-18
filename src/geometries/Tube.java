@@ -4,22 +4,23 @@ import primitives.Point3D;
 import primitives.Ray;
 import primitives.Vector;
 
+import java.util.List;
+
 /**
  * this is a class represent a Tube
  * @author Noam Shushan
  */
-public class Tube implements Geometry {
+public class Tube extends RadialGeometry implements Geometry {
     final Ray _axisRay;
-    final double _radius;
 
     /**
      * Constructor for Tube
      * @param axisRay
      * @param radius
      */
-    public Tube(Ray axisRay, double radius) {
+    public Tube(double radius, Ray axisRay) {
+        super(radius);
         _axisRay = axisRay;
-        _radius = radius;
     }
 
     /**
@@ -32,9 +33,20 @@ public class Tube implements Geometry {
         double t = _axisRay.getDir().dotProduct(p_p0);
 
         Point3D O = _axisRay.getP0().add(p_p0.scale(t));
+        if(O.equals(point))
+            throw new IllegalArgumentException("point cannot be equal to O");
 
         Vector N = point.subtract(O);
 
         return N.normalize();
+    }
+
+    /**
+     * @param ray ray that cross the geometry
+     * @return list of intersection points that were found
+     */
+    @Override
+    public List<Point3D> findIntersections(Ray ray) {
+        return null;
     }
 }

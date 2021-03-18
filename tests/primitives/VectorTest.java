@@ -45,7 +45,6 @@ class VectorTest {
     @Test
     void dotProduct() {
         Vector v3 = new Vector(0, 3, -2);
-
         assertTrue(isZero(v1.dotProduct(v3)),
                 "ERROR: dotProduct() for orthogonal vectors is not zero");
 

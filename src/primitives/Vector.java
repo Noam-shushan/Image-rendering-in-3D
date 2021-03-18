@@ -9,17 +9,6 @@ public class Vector {
 
     /**
      * Constructor for the Vector
-     * generate a new object of Vector from 3 Coordinate's
-     * @param x x coordinate
-     * @param y y coordinate
-     * @param z z coordinate
-     */
-    public Vector(Coordinate x, Coordinate y, Coordinate z){
-        this(new Point3D(x, y, z));
-    }
-
-    /**
-     * Constructor for the Vector
      * generate a new object of Vector from 3 axis values
      * @param x x value
      * @param y y value
@@ -39,7 +28,7 @@ public class Vector {
             throw new IllegalArgumentException("cannot create Vector to point(0,0,0)");
         }
 
-        _head = new Point3D(head._x, head._y, head._z);
+        _head = new Point3D(head.getX(), head.getY(), head.getZ());
     }
 
     /**
@@ -149,6 +138,6 @@ public class Vector {
      * @return head
      */
     public Point3D getHead() {
-        return new Point3D(_head._x, _head._y, _head._z);
+        return new Point3D(_head.getX(), _head.getY(), _head.getZ());
     }
 }
