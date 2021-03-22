@@ -3,8 +3,15 @@ package geometries;
 import org.junit.jupiter.api.Test;
 import primitives.*;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.*;
+/**
+ * testing for Tube class
+ *
+ * @author Noam Shushan
+ * @author Yonatan Chohen
+ */
 class TubeTest {
 
     @Test

@@ -140,4 +140,8 @@ public class Vector {
     public Point3D getHead() {
         return new Point3D(_head.getX(), _head.getY(), _head.getZ());
     }
+
+    public static double getAngle(Vector u, Vector v){
+        return Math.acos(u.dotProduct(v) / (u.length() * v.length()) );
+    }
 }

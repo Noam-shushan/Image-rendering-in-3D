@@ -1,13 +1,12 @@
 package geometries;
 
-import primitives.Point3D;
-import primitives.Ray;
-import primitives.Vector;
+import primitives.*;
 
 import java.util.List;
 
 /**
  * this is a class represent a Tube
+ *
  * @author Noam Shushan
  */
 public class Tube extends RadialGeometry implements Geometry {
@@ -15,6 +14,7 @@ public class Tube extends RadialGeometry implements Geometry {
 
     /**
      * Constructor for Tube
+     *
      * @param axisRay
      * @param radius
      */
@@ -24,6 +24,12 @@ public class Tube extends RadialGeometry implements Geometry {
     }
 
     /**
+     * normal of Tube
+     * calculation of the normal:
+     * t = v*(p - p0)
+     * O = p0 + t*v
+     * N = normalize(P - O)
+     *
      * @param point should be null for flat geometries
      * @return the normal to the geometry
      */
@@ -33,7 +39,7 @@ public class Tube extends RadialGeometry implements Geometry {
         double t = _axisRay.getDir().dotProduct(p_p0);
 
         Point3D O = _axisRay.getP0().add(p_p0.scale(t));
-        if(O.equals(point))
+        if (O.equals(point))
             throw new IllegalArgumentException("point cannot be equal to O");
 
         Vector N = point.subtract(O);

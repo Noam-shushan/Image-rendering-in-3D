@@ -1,6 +1,6 @@
 package geometries;
 
-public class RadialGeometry {
+public abstract class RadialGeometry {
     final double _radius;
 
     public RadialGeometry(double radius) {

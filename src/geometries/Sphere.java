@@ -1,9 +1,6 @@
 package geometries;
 
-import primitives.Point3D;
-import primitives.Ray;
-import primitives.Util;
-import primitives.Vector;
+import primitives.*;
 
 import java.util.List;
 
@@ -13,11 +10,12 @@ import java.util.List;
  */
 public class Sphere extends RadialGeometry implements Geometry {
 
-    final Point3D _center;
+    final Point3D _center; // the center of the sphere
+
     /**
      * Constructor for the Sphere class
-     * @param center
-     * @param radius
+     * @param center the center of the sphere
+     * @param radius the radius of the sphere
      */
     public Sphere(double radius, Point3D center) {
         super(radius);
@@ -33,7 +31,8 @@ public class Sphere extends RadialGeometry implements Geometry {
     }
 
     /**
-     * the normal of this
+     * the normal of sphere:
+     * n = normalize(P - O)
      * @param p
      * @return normal vector
      */
@@ -44,6 +43,7 @@ public class Sphere extends RadialGeometry implements Geometry {
     }
 
     /**
+     * find intersections point with the sphere
      * @param ray ray that cross the geometry
      * @return list of intersection points that were found
      */
@@ -55,15 +55,16 @@ public class Sphere extends RadialGeometry implements Geometry {
         if(p0.equals(_center)){
             throw new IllegalArgumentException("ray p0 cannot be equals to the center of the sphere");
         }
+
         Vector u = _center.subtract(p0);
         double tm = u.dotProduct(v);
-        double d = Util.alignZero(Math.sqrt(u.lengthSquared() - Util.square(tm)));
+        double d = Util.alignZero(Math.sqrt(u.lengthSquared() - (tm * tm) ));
 
         if(d >= _radius){
             return null; // there is no intersections points
         }
 
-        double th = Math.sqrt(Util.square(_radius) - Util.square(d));
+        double th = Math.sqrt( (_radius * _radius) - (d * d) );
 
         double t1 = tm - th;
         double t2 = tm + th;

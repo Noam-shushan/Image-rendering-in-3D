@@ -1,8 +1,6 @@
 package geometries;
 
-import primitives.Point3D;
-import primitives.Ray;
-import primitives.Vector;
+import primitives.*;
 
 import java.util.List;
 
@@ -32,6 +30,12 @@ public class Plane implements Geometry {
      * Constructor of Plane from 3 points on its surface
      * the points are ordered from right to left
      * forming an arc in right direction
+     * we calculate the normal on the constructor
+     * to avoid repeated request of the normal
+     * the calculation of the normal:
+     * V = P2 - P1
+     * U = P3 - P1
+     * N = normalize( V x U )
      * @param p1
      * @param p2
      * @param p3
@@ -66,6 +70,7 @@ public class Plane implements Geometry {
     }
 
     /**
+     * find intersections point with the plane
      * @param ray ray that cross the geometry
      * @return list of intersection points that were found
      */
