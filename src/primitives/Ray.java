@@ -28,6 +28,15 @@ public class Ray {
         return _dir;
     }
 
+    /**
+     * p = p0 + tv
+     * @param t
+     * @return p
+     */
+    public Point3D getPoint(double t){
+        return _p0.add(_dir.scale(t));
+    }
+
     @Override
     public String toString() {
         return "p0 = " + _p0 + ", direction = " + _dir;

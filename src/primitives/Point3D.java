@@ -65,9 +65,9 @@ public class Point3D {
      * @return (x2 - x1)^2 + (y2 -y1)^2 + (z2 - z1)^2
      */
     public double distanceSquared(Point3D other){
-        return Util.square(other._x._coord - _x._coord) +
-                Util.square(other._y._coord - _y._coord) +
-                Util.square(other._z._coord - _z._coord );
+        return (other._x._coord - _x._coord) * (other._x._coord - _x._coord) +
+                (other._y._coord - _y._coord) * (other._y._coord - _y._coord) +
+                (other._z._coord - _z._coord) * (other._z._coord - _z._coord);
     }
 
     @Override

@@ -7,9 +7,14 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class Geometries  implements Intersectable {
-    private List<Intersectable> _interfaces = null;
+    private List<Intersectable> _interfaces;
 
+    /**
+     * Constructor for Geometries
+     */
     public Geometries() {
+        // use LinkedList because if the use of this list is only for iterate
+        // from the start of the list to the end and adding new items to her
         _interfaces = new LinkedList();
     }
 

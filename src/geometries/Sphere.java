@@ -1,6 +1,7 @@
 package geometries;
 
 import primitives.*;
+import static primitives.Util.*;
 
 import java.util.List;
 
@@ -58,7 +59,7 @@ public class Sphere extends RadialGeometry implements Geometry {
 
         Vector u = _center.subtract(p0);
         double tm = u.dotProduct(v);
-        double d = Util.alignZero(Math.sqrt(u.lengthSquared() - (tm * tm) ));
+        double d = alignZero(Math.sqrt(u.lengthSquared() - (tm * tm) ));
 
         if(d >= _radius){
             return null; // there is no intersections points
@@ -70,21 +71,20 @@ public class Sphere extends RadialGeometry implements Geometry {
         double t2 = tm + th;
 
         if(t1 > 0 && t2 > 0){
-            Point3D p1 = p0.add(v.scale(t1));
-            Point3D p2 = p0.add(v.scale(t2));
+            Point3D p1 = ray.getPoint(t1);
+            Point3D p2 = ray.getPoint(t2);
 
             return List.of(p1, p2);
         }
 
         if(t1 > 0){
-            Point3D p = p0.add(v.scale(t1));
-            return List.of(p);
+            return List.of(ray.getPoint(t1));
         }
 
         if(t2 > 0){
-            Point3D p = p0.add(v.scale(t2));
-            return List.of(p);
+            return List.of(ray.getPoint(t2));
         }
+
         return null;
     }
 }

@@ -4,6 +4,7 @@ import primitives.*;
 
 import java.util.List;
 
+import static primitives.Util.alignZero;
 import static primitives.Util.isZero;
 
 /**
@@ -46,8 +47,8 @@ public class Plane implements Geometry {
         Vector U = p2.subtract(p1);
         Vector V = p3.subtract(p1);
 
+        // if UxV = (0,0,0) this Plane not create because all 3 point on the same line
         Vector N = U.crossProduct(V);
-
         N.normalize();
 
         _normal = N;
@@ -83,13 +84,15 @@ public class Plane implements Geometry {
             return List.of(_q0);
         }
 
-        double nv = _normal.dotProduct(v);
+        Vector n = _normal;
+
+        double nv = n.dotProduct(v);
         if(isZero(nv)){ // the ray is vertical on the plane
             return null;
         }
 
-        double t = _normal.dotProduct(_q0.subtract(p0)) / nv;
+        double t = n.dotProduct(_q0.subtract(p0)) / nv;
 
-        return List.of(p0.add(v.scale(t)));
+        return List.of(ray.getPoint(t));
     }
 }
