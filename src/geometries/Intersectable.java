@@ -4,6 +4,10 @@ import primitives.*;
 
 import java.util.List;
 
+/**
+ * interface to get intersection points of ray with some geometry
+ * @author Noam Shushan
+ */
 public interface Intersectable {
     /**
      *

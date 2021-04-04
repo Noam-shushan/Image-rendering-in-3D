@@ -5,7 +5,7 @@ import primitives.*;
 import java.util.List;
 
 /**
- * this is a class represent a Tube
+ * this class represent a Tube
  *
  * @author Noam Shushan
  */
@@ -14,9 +14,8 @@ public class Tube extends RadialGeometry implements Geometry {
 
     /**
      * Constructor for Tube
-     *
-     * @param axisRay
-     * @param radius
+     * @param axisRay the ray of the tube
+     * @param radius the radius of the tube
      */
     public Tube(double radius, Ray axisRay) {
         super(radius);

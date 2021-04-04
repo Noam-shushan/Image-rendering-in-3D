@@ -2,7 +2,7 @@ package primitives;
 
 
 /**
- * this is a class present a ray by starting point and direction
+ * this class represent a ray by starting point and direction
  * @author Noam Shushan
  */
 public class Ray {
@@ -11,7 +11,7 @@ public class Ray {
 
     /**
      * Constructor for Ray class
-     * generat an object of a Ray from Point3D and Vector
+     * generate an object of a Ray from Point3D and Vector
      * @param p0 the starting point of the given fund on the ray
      * @param dir the direction of the ray
      */

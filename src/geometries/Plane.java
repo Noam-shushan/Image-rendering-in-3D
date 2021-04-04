@@ -1,14 +1,11 @@
 package geometries;
 
 import primitives.*;
-
 import java.util.List;
-
-import static primitives.Util.alignZero;
-import static primitives.Util.isZero;
+import static primitives.Util.*;
 
 /**
- * this class present a Plane
+ * this class represent a Plane
  *
  * @author Noam Shushan
  */
@@ -19,8 +16,8 @@ public class Plane implements Geometry {
 
     /**
      * Constructor of Plane from starting point and normal vector
-     * @param p0
-     * @param normal
+     * @param p0 the point were the normal is point from
+     * @param normal the normal of the plane
      */
     public Plane(Point3D p0, Vector normal) {
         _q0 = p0;
@@ -37,9 +34,9 @@ public class Plane implements Geometry {
      * V = P2 - P1
      * U = P3 - P1
      * N = normalize( V x U )
-     * @param p1
-     * @param p2
-     * @param p3
+     * @param p1 P1
+     * @param p2 P2
+     * @param p3 P3
      */
     public Plane(Point3D p1, Point3D p2, Point3D p3) {
         _q0 = p1;
@@ -86,13 +83,22 @@ public class Plane implements Geometry {
 
         Vector n = _normal;
 
+        Vector p0_q0 = _q0.subtract(p0);
+        double mechane = n.dotProduct(p0_q0);
+        if (isZero(mechane)){
+            return null;
+        }
+
         double nv = n.dotProduct(v);
         if(isZero(nv)){ // the ray is vertical on the plane
             return null;
         }
 
-        double t = n.dotProduct(_q0.subtract(p0)) / nv;
+        double t = alignZero(mechane / nv);
 
-        return List.of(ray.getPoint(t));
+        if(t > 0)
+            return List.of(ray.getPoint(t));
+
+        return null;
     }
 }

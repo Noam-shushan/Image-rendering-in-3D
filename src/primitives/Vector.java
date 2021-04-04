@@ -1,22 +1,11 @@
 package primitives;
 
 /**
- * this is a class to present a Vector of 3D
+ * this class represent a Vector of 3D
  * @author Noam shushan
  */
 public class Vector {
     private Point3D _head; // the representation of the vector
-
-    /**
-     * Constructor for the Vector
-     * generate a new object of Vector from 3 axis values
-     * @param x x value
-     * @param y y value
-     * @param z z value
-     */
-    public Vector(double x, double y, double z){
-        this(new Point3D(x, y, z));
-    }
 
     /**
      * Constructor for the Vector
@@ -29,6 +18,17 @@ public class Vector {
         }
 
         _head = new Point3D(head.getX(), head.getY(), head.getZ());
+    }
+
+    /**
+     * Constructor for the Vector
+     * generate a new object of Vector from 3 axis values
+     * @param x x value
+     * @param y y value
+     * @param z z value
+     */
+    public Vector(double x, double y, double z){
+        this(new Point3D(x, y, z));
     }
 
     /**
@@ -46,7 +46,7 @@ public class Vector {
      * @return new Vector from (x2 - x1, y2 - y1, z2 - z1)
      */
     public Vector subtract(Vector other){
-        return _head.subtract(other.getHead());
+        return _head.subtract(other._head);
     }
 
     /**

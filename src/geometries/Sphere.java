@@ -6,7 +6,7 @@ import static primitives.Util.*;
 import java.util.List;
 
 /**
- * this is a sphere class
+ * this class represent a sphere
  * @author  Noam Shushan
  */
 public class Sphere extends RadialGeometry implements Geometry {
@@ -65,10 +65,10 @@ public class Sphere extends RadialGeometry implements Geometry {
             return null; // there is no intersections points
         }
 
-        double th = Math.sqrt( (_radius * _radius) - (d * d) );
+        double th = alignZero(Math.sqrt( (_radius * _radius) - (d * d) ));
 
-        double t1 = tm - th;
-        double t2 = tm + th;
+        double t1 = alignZero(tm - th);
+        double t2 = alignZero(tm + th);
 
         if(t1 > 0 && t2 > 0){
             Point3D p1 = ray.getPoint(t1);
@@ -85,6 +85,6 @@ public class Sphere extends RadialGeometry implements Geometry {
             return List.of(ray.getPoint(t2));
         }
 
-        return null;
+        return null; // 0 points
     }
 }

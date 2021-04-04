@@ -51,17 +51,17 @@ class PlaneTest {
         assertEquals(p1.getNormal(null), p2.getNormal(null));
     }
 
-
+    // 1 point
     @Test
     void findIntersections() {
         Plane plane2 = new Plane(new Point3D(10,2,-3.5), new Vector(3,4,-2));
         Ray ray = new Ray(new Point3D(0, 0, 0), new Vector(5,2,4));
         assertEquals(List.of(new Point3D(15,6,12)), plane2.findIntersections(ray));
     }
-
+    // 0 point
     @Test
     void findIntersections1() {
-        Ray ray = new Ray(new Point3D(0, 3, 0), new Vector(2,4,0));
+        Ray ray = new Ray(new Point3D(0, 5, 0), new Vector(6,-5,0));
         assertNull(plane.findIntersections(ray));
     }
 }

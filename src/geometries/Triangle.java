@@ -1,19 +1,20 @@
 package geometries;
 
 import primitives.*;
+import static primitives.Util.*;
 
 import java.util.List;
 
 /**
- * this is a class represent a Triangle
+ * this class represent a Triangle
  * @author Noam Shushan
  */
 public class Triangle extends Polygon {
     /**
      * Constructor for Triangle class
-     * @param p1
-     * @param p2
-     * @param p3
+     * @param p1 first point
+     * @param p2 second point
+     * @param p3 third point
      */
     public Triangle(Point3D p1, Point3D p2, Point3D p3) {
         super(p1, p2, p3);
@@ -36,12 +37,15 @@ public class Triangle extends Polygon {
                 n2 = v2.crossProduct(v3).normalize(),
                 n3 = v3.crossProduct(v1).normalize();
 
-        var temp = List.of(n1.dotProduct(v), n2.dotProduct(v), n3.dotProduct(v));
+        var temp = List.of(
+                alignZero(n1.dotProduct(v)),
+                alignZero(n2.dotProduct(v)),
+                alignZero(n3.dotProduct(v)));
         boolean allNegative = temp.stream().allMatch(x -> x < 0);
         boolean allPositive = temp.stream().allMatch(x -> x > 0);
 
         if(allNegative || allPositive){
-            return super.findIntersections(ray);
+            return _plane.findIntersections(ray);
         }
 
         return null;

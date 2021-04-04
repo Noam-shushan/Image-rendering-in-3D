@@ -9,7 +9,9 @@ public class Point3D {
     final Coordinate _y; // y axis
     final Coordinate _z; // z axis
 
-    // a zero constants
+    /**
+     * a zero constants of point (0, 0, 0)
+      */
     public final static Point3D ZERO = new Point3D(0d, 0d, 0d);
 
     /**
