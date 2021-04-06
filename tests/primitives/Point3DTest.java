@@ -14,7 +14,7 @@ class Point3DTest {
 
     Point3D p1 = new Point3D(0.0d, 0.5d, 1.0d);
     Point3D p2 = new Point3D(0.00000000000001d, 0.49999999999999999d, 1d);
-
+    Point3D p3 = new Point3D(1, 1, 1);
     @Test
     void add() {
         Point3D p3 = new Point3D(1, 2, 3);
@@ -48,5 +48,6 @@ class Point3DTest {
     void testToString() {
         System.out.println("p1 = " + p1);
         System.out.println("p2 = " + p2);
+        out.println("p3 = " + p3);
     }
 }
