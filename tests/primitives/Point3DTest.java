@@ -49,5 +49,6 @@ class Point3DTest {
         System.out.println("p1 = " + p1);
         System.out.println("p2 = " + p2);
         out.println("p3 = " + p3);
+        out.println("eize yophi");
     }
 }
