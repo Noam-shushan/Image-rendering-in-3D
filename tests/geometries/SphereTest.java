@@ -26,7 +26,7 @@ class SphereTest {
     // ============ Equivalence Partitions Tests ==============//
     // TC01: Ray's line is outside the sphere (0 points)
     @Test
-    void findIntersections() {
+    void findIntersections1() {
         assertNull(sphere.findIntersections(new Ray(new Point3D(-1, 0, 0), new Vector(1, 1, 0))),
                 "Ray's line out of sphere");
     }
@@ -87,9 +87,20 @@ class SphereTest {
         assertEquals(2, result.size());
     }
 
-    //TODO
+
     // TC14: Ray starts at sphere and goes inside (1 points)
+    @Test
+    void findIntersections8() {
+        Ray ray = new Ray(new Point3D(2, 0, 0), new Vector(-1, 0, 0));
+        assertEquals(List.of(new Point3D(0, 0, 0)), sphere.findIntersections(ray));
+    }
+
     // TC15: Ray starts inside (1 points)
+    @Test
+    void findIntersections9() {
+        Ray ray = new Ray(new Point3D(0.59, 0, 0), new Vector(-0.59, 0, 0));
+        assertEquals(List.of(new Point3D(0, 0, 0)), sphere.findIntersections(ray));
+    }
 
     // TC16: Ray starts at the center (1 points)
     @Test
