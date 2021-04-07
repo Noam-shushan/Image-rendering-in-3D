@@ -87,7 +87,6 @@ class SphereTest {
         assertEquals(2, result.size());
     }
 
-
     // TC14: Ray starts at sphere and goes inside (1 points)
     @Test
     void findIntersections8() {

@@ -78,26 +78,27 @@ public class Plane implements Geometry {
         Vector v = ray.getDir();
 
         if(_q0.equals(p0)){
-            return List.of(_q0);
+            return null;
         }
 
         Vector n = _normal;
 
         Vector p0_q0 = _q0.subtract(p0);
-        double mechane = n.dotProduct(p0_q0);
-        if (isZero(mechane)){
+        double mechane = alignZero(n.dotProduct(p0_q0));
+        if (isZero(mechane)){ // the starting point of the ray is inside the plane
             return null;
         }
 
-        double nv = n.dotProduct(v);
+        double nv = alignZero(n.dotProduct(v));
         if(isZero(nv)){ // the ray is vertical on the plane
             return null;
         }
 
         double t = alignZero(mechane / nv);
 
-        if(t > 0)
+        if(t > 0){
             return List.of(ray.getPoint(t));
+        }
 
         return null;
     }
