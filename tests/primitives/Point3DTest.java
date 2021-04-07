@@ -2,7 +2,6 @@ package primitives;
 
 import org.junit.jupiter.api.Test;
 
-import static java.lang.System.out;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -48,7 +47,5 @@ class Point3DTest {
     void testToString() {
         System.out.println("p1 = " + p1);
         System.out.println("p2 = " + p2);
-        out.println("p3 = " + p3);
-        out.println("eize yophi");
     }
 }
