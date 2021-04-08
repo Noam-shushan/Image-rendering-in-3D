@@ -45,7 +45,15 @@ public class Sphere extends RadialGeometry implements Geometry {
 
     /**
      * find intersections point with the sphere
-     * @param ray ray that cross the geometry
+     * let O be the center of the sphere, let r be the radius
+     * u = O − p0
+     * tm = v ∙ u
+     * d = sqrt ( |u|^2 - tm^2 )
+     * th = sqrt ( r^2 - d^2 )
+     * if (d ≥ r) there are no intersections
+     * t1,2 = tm ± th, p1,2 = p0 + t1,2∙v
+     * t1,2∙v => take only if t > 0
+     * @param ray ray that cross the sphere
      * @return list of intersection points that were found
      */
     @Override

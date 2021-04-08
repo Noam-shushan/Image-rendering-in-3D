@@ -52,7 +52,6 @@ public class Plane implements Geometry {
     }
 
     /**
-     *
      * @param point dummy point not use for flat geometries
      *              should be assigned null value
      * @return normal to the plane
@@ -69,8 +68,10 @@ public class Plane implements Geometry {
 
     /**
      * find intersections point with the plane
-     * @param ray ray that cross the geometry
-     * @return list of intersection points that were found
+     * t = N∙(q0 - p0) / N∙v
+     * if t > 0 point as found
+     * @param ray ray that cross the plane
+     * @return list of intersection points that were found => p0 + tv
      */
     @Override
     public List<Point3D> findIntersections(Ray ray) {
@@ -84,8 +85,8 @@ public class Plane implements Geometry {
         Vector n = _normal;
 
         Vector p0_q0 = _q0.subtract(p0);
-        double mechane = alignZero(n.dotProduct(p0_q0));
-        if (isZero(mechane)){ // the starting point of the ray is inside the plane
+        double mone = alignZero(n.dotProduct(p0_q0));
+        if (isZero(mone)){ // the starting point of the ray is inside the plane
             return null;
         }
 
@@ -94,7 +95,7 @@ public class Plane implements Geometry {
             return null;
         }
 
-        double t = alignZero(mechane / nv);
+        double t = alignZero(mone / nv);
 
         if(t > 0){
             return List.of(ray.getPoint(t));

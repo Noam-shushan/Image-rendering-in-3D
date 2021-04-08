@@ -21,7 +21,17 @@ public class Triangle extends Polygon {
     }
 
     /**
-     * @param ray ray that cross the geometry
+     * find intersections point with the triangle
+     * v1 = p1 - p0
+     * v2 = p2 - p0
+     * v3 = p3 - p0
+     * n1 = normalize(v1xv2)
+     * n2 = normalize(v2xv3)
+     * n3 = normalize(v3xv1)
+     * let v be the direction of the rey
+     * if v∙ni (1 <= i < 3) is have the sing (+/-)
+     * there is intersection points with the triangle
+     * @param ray ray that cross the triangle
      * @return list of intersection points that were found
      */
     @Override
@@ -30,6 +40,9 @@ public class Triangle extends Polygon {
         Vector v = ray.getDir();
 
         var result = _plane.findIntersections(ray);
+
+        // if there is no intersections with the plane is a fortiori (kal&homer)
+        // that there is no intersections with the triangle
         if(result == null){
             return null;
         }
@@ -48,8 +61,9 @@ public class Triangle extends Polygon {
 
         boolean allNegative = x1 < 0 && x2 < 0 && x3 < 0;
         boolean allPositive = x1 > 0 && x2 > 0 && x3 > 0;
+
         if(allNegative || allPositive){
-            return result;
+            return result; // return the intersections with the plane that the triangle is on
         }
 
         return null;
