@@ -5,12 +5,16 @@ package primitives;
  * @author Noam shushan
  */
 public class Vector {
-    private Point3D _head; // the representation of the vector
+    /**
+     * the representation of the vector
+     */
+    private Point3D _head;
 
     /**
      * Constructor for the Vector
      * generate a new object of Vector from Point3D
      * @param head the head of the Vector
+     * @throws IllegalArgumentException if head is vector zero
      */
     public Vector(Point3D head) {
         if(head.equals(Point3D.ZERO)) { // vector zero is not allowed to create
@@ -26,6 +30,7 @@ public class Vector {
      * @param x x value
      * @param y y value
      * @param z z value
+     * @throws IllegalArgumentException if x = y = z = 0
      */
     public Vector(double x, double y, double z){
         this(new Point3D(x, y, z));
@@ -42,8 +47,9 @@ public class Vector {
 
     /**
      * subtract tow vectors
-     * @param other
-     * @return new Vector from (x2 - x1, y2 - y1, z2 - z1)
+     * @param other the other vector to subtract with
+     * @return new Vector from (x1 - x2, y1 - y2, z1 - z2)
+     * @throws IllegalArgumentException if (x1 - x2, y1 - y2, z1 - z2) = (0,0,0)
      */
     public Vector subtract(Vector other){
         return _head.subtract(other._head);
@@ -53,6 +59,7 @@ public class Vector {
      * multiply this vector with a scalar
      * @param scalar the scalar
      * @return new Vector with the value of (scalar * x, scalar * y, scalar * z)
+     * @throws IllegalArgumentException if scalar = 0
      */
     public Vector scale(double scalar){
         return new Vector(new Point3D(
@@ -77,6 +84,7 @@ public class Vector {
      * @param other (x2, y2, z2)
      * @return new Vector from (x1, y1, z1)X(x2, y2, z2) =
      * = (y1*z2 -z1*y2, z1*x2 - x1*z2, x1*y2 - y1*x2)
+     * @throws IllegalArgumentException if we get vector zero
      */
     public Vector crossProduct(Vector other){
         return new Vector(

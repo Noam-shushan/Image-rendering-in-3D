@@ -37,6 +37,7 @@ public class Plane implements Geometry {
      * @param p1 P1
      * @param p2 P2
      * @param p3 P3
+     * @throws IllegalArgumentException if UxV = (0,0,0) => all 3 point on the same line
      */
     public Plane(Point3D p1, Point3D p2, Point3D p3) {
         _q0 = p1;

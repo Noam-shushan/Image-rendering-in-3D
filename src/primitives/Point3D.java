@@ -5,9 +5,18 @@ package primitives;
  * @author Noam Shushan
  */
 public class Point3D {
-    final Coordinate _x; // x axis
-    final Coordinate _y; // y axis
-    final Coordinate _z; // z axis
+    /**
+     * x axis
+     */
+    final Coordinate _x;
+    /**
+     * y axis
+     */
+    final Coordinate _y;
+    /**
+     * z axis
+     */
+    final Coordinate _z;
 
     /**
      * a zero constants of point (0, 0, 0)
@@ -43,6 +52,7 @@ public class Point3D {
      * subtract tow Point3D
      * @param other the other point to subtract from this point
      * @return new Vector with the value of (x1 - x2, y1 - y2, z1 - z2)
+     * @throws IllegalArgumentException if (x1 - x2, y1 - y2, z1 - z2) = (0,0,0)
      */
     public Vector subtract(Point3D other) {
         return new Vector(
@@ -85,14 +95,24 @@ public class Point3D {
         return "(" + _x + ", " + _y + ", " + _z + ')';
     }
 
+    /**
+     * getter for the x value
+     * @return x coordinate value
+     */
     public double getX() {
         return _x._coord;
     }
-
+    /**
+     * getter for the y value
+     * @return y coordinate value
+     */
     public double getY() {
         return _y._coord;
     }
-
+    /**
+     * getter for the z value
+     * @return z coordinate value
+     */
     public double getZ() {
         return _z._coord;
     }

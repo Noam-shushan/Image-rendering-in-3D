@@ -6,8 +6,14 @@ package primitives;
  * @author Noam Shushan
  */
 public class Ray {
-    final Point3D _p0; // the starting point of the given fund on the ray
-    final Vector _dir; // the direction of the ray
+    /**
+     * the starting point of the ray
+     */
+    final Point3D _p0;
+    /**
+     * the direction of the ray
+     */
+    final Vector _dir;
 
     /**
      * Constructor for Ray class
@@ -20,17 +26,25 @@ public class Ray {
         _dir = dir.normalized();
     }
 
+    /**
+     * get the starting point of the ray
+     * @return starting point of the ray (p0)
+     */
     public Point3D getP0() {
         return _p0;
     }
 
+    /**
+     * get the direction of the ray
+     * @return the direction of the ray
+     */
     public Vector getDir() {
         return _dir;
     }
 
     /**
      * p = p0 + tv
-     * @param t
+     * @param t scalar for interaction point with some geometry
      * @return p
      */
     public Point3D getPoint(double t){
