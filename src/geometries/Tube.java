@@ -52,6 +52,39 @@ public class Tube extends RadialGeometry implements Geometry {
      */
     @Override
     public List<Point3D> findIntersections(Ray ray) {
+//        Point3D p0 = ray.getP0();
+//        Vector v = ray.getDir();
+//        Point3D dirP = v.getHead();
+//
+//        double a = dirP.getX() * dirP.getX() + dirP.getZ() * dirP.getZ();
+//        double b = 2 * (p0.getX() * dirP.getX() + p0.getZ() * dirP.getZ());
+//        double c = p0.getX() * p0.getX() + p0.getZ() * p0.getZ() - _radius * _radius;
+//
+//        double discr = b * b -4 * (a * c);
+//        if(discr < 0){
+//            return null;
+//        }
+//
+//        double x1 = (-b + Math.sqrt(discr)) / (2 * a);
+//        double x2 = (-b - Math.sqrt(discr)) / (2 * a);
+//
+//        double t = x1 > x2 ? x2 : x1;
+//
+//        if(t < 0){
+//            return null;
+//        }
+//
+//        Point3D point = ray.getPoint(t);
+//        if(point.getY() < 0){
+//            return null;
+//        }
+//
+//        Vector normal = getNormal(point);
+//
+//        if(dirP.getY() != 0){
+//
+//        }
+
         return null;
     }
 }

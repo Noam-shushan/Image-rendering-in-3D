@@ -29,7 +29,6 @@ class TriangleTest {
         assertNull(t.findIntersections(ray), "Outside against edge");
     }
 
-
     //TC03: Outside against vertex(0 Point)
     @Test
     void findIntersections3() {
