@@ -12,6 +12,9 @@ class TriangleTest {
             new Point3D(0, 3, 0),
             new Point3D(0, 0, 0));
 
+    /**
+     *tests for {@link geometries.Triangle#findIntersections(primitives.Ray)}.
+     */
     // ============ Equivalence Partitions Tests ==============
     //TC01: Inside polygon/triangle(1 Point)
     @Test

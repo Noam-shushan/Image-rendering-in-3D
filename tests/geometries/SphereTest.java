@@ -16,6 +16,9 @@ import static org.junit.jupiter.api.Assertions.*;
 class SphereTest {
     Sphere sphere = new Sphere(1d, new Point3D(1, 0, 0));
 
+    /**
+     *test for {@link geometries.Plane#getNormal(Point3D)}
+     */
     @Test
     void getNormal() {
         Sphere sp = new Sphere(1 , new Point3D(0, 0, 1));
@@ -23,6 +26,9 @@ class SphereTest {
         assertEquals(new Vector(1,0,0), normal);
     }
 
+    /**
+     *tests for {@link geometries.Sphere#findIntersections(primitives.Ray)}.
+     */
     // ============ Equivalence Partitions Tests ==============//
     // TC01: Ray's line is outside the sphere (0 points)
     @Test

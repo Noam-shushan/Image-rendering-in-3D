@@ -38,7 +38,7 @@ public class Vector {
 
     /**
      * add tow vectors
-     * @param other
+     * @param other the other vector to add
      * @return new Vector from (x1 + x2, y1 + y2, z1 + z2)
      */
     public Vector add(Vector other){
@@ -146,7 +146,7 @@ public class Vector {
      * @return head
      */
     public Point3D getHead() {
-        return new Point3D(_head.getX(), _head.getY(), _head.getZ());
+        return _head;
     }
 
     public static double getAngle(Vector u, Vector v){

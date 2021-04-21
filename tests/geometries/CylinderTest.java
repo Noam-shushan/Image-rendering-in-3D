@@ -9,6 +9,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class CylinderTest {
 
+    /**
+     *test for {@link geometries.Cylinder#getNormal(primitives.Point3D)}
+     */
     @Test
     void getNormal() {
         Cylinder cld = new Cylinder(1,

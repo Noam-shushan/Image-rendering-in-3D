@@ -11,7 +11,9 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author Yonatan Chohen
  */
 class TubeTest {
-
+    /**
+     *test for {@link geometries.Tube#getNormal(primitives.Point3D)}
+     */
     @Test
     void getNormal() {
         Ray ray = new Ray(new Point3D(0,1,0), new Vector(0,1,0));

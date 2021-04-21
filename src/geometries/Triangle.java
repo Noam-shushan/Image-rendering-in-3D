@@ -2,6 +2,7 @@ package geometries;
 
 import primitives.*;
 import static primitives.Util.*;
+import static primitives.Util.checkSign;
 
 import java.util.List;
 
@@ -55,9 +56,9 @@ public class Triangle extends Polygon {
                 n2 = v2.crossProduct(v3).normalize(),
                 n3 = v3.crossProduct(v1).normalize();
 
-        double x1 = alignZero(n1.dotProduct(v)),
-                x2 = alignZero(n2.dotProduct(v)),
-                x3 = alignZero(n3.dotProduct(v));
+        double x1 = alignZero(v.dotProduct(n1)),
+                x2 = alignZero(v.dotProduct(n2)),
+                x3 = alignZero(v.dotProduct(n3));
 
         boolean allNegative = x1 < 0 && x2 < 0 && x3 < 0;
         boolean allPositive = x1 > 0 && x2 > 0 && x3 > 0;

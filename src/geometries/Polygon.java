@@ -84,7 +84,7 @@ public class Polygon implements Geometry {
     /**
      *
      * @param point should be null for flat geometries
-     * @return
+     * @return the normal of the plane that is the same for every point on the polygon
      */
     @Override
     public Vector getNormal(Point3D point) {
@@ -100,7 +100,7 @@ public class Polygon implements Geometry {
         List<Point3D> result = _plane.findIntersections(ray);
 
         if (result == null) {
-            return result;
+            return null;
         }
 
         Point3D P0 = ray.getP0();
@@ -137,4 +137,5 @@ public class Polygon implements Geometry {
 
         return result;
     }
+
 }

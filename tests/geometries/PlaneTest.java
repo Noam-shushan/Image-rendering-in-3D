@@ -18,7 +18,9 @@ class PlaneTest {
             new Point3D(0, 0, 1),
             new Point3D(0, 2, 0),
             new Point3D(1, 0, 0));
-
+    /**
+     *test for {@link geometries.Plane#Plane(Point3D, Point3D, Point3D)}.
+     */
     @Test
     void testPlane() {
         try {
@@ -31,6 +33,9 @@ class PlaneTest {
         }
     }
 
+    /**
+     *tests for {@link geometries.Plane#getNormal(primitives.Point3D)}.
+     */
     @Test
     void getNormal1() {
         assertEquals(1, plane.getNormal(null).length());
@@ -51,6 +56,9 @@ class PlaneTest {
         assertEquals(p1.getNormal(null), p2.getNormal(null));
     }
 
+    /**
+     *tests for {@link geometries.Plane#findIntersections(primitives.Ray)}.
+     */
     // ============ Equivalence Partitions Tests ==============//
     // The Ray's here ar not orthogonal and not parallels to the plane
 

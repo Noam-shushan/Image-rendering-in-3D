@@ -1,6 +1,8 @@
 package elements;
 import primitives.*;
 
+import java.util.Objects;
+
 import static primitives.Util.*;
 
 /**
@@ -11,7 +13,7 @@ public class Camera {
     /**
      * the location of the camera
      */
-    private final Point3D _p0;
+    private Point3D _p0;
     /**
      * the 3 directions of the camera
      */
@@ -50,17 +52,6 @@ public class Camera {
 
     /**
      * construct ray through a pixel in the view plane
-     * Image center: Pc = p0 + d∙v
-     * Ratio (pixel width & height):
-     * Ry = h / Ny
-     * Rx = w / Nx
-     * Pixel[i,j] center:
-     * Pi,j = Pc + (Xi∙vRight + Yi∙vUp)
-     * Xi = −(i – (Ny − 1) / 2)∙Ry
-     * Xj = (j – (Nx − 1) / 2)∙Rx
-     *
-     * Vi,j = Pi,j − p0
-     *
      * nX and nY create the resolution
      * @param nX number of pixels to x axis
      * @param nY number of pixels to y axis
@@ -92,6 +83,27 @@ public class Camera {
         //𝒗𝒊,𝒋 = 𝑷𝒊,𝒋 − 𝑷𝟎
         Vector vIJ = pIJ.subtract(_p0);
         return new Ray(_p0, vIJ);
+    }
+
+    /**
+     * moving the camera from her location
+     * @param up    delta for _vUp vector
+     * @param right delta for _vRight vector
+     * @param to    delta for _vTo vector
+     * @return this
+     */
+    public Camera moveCamera(double up, double right, double to) {
+        if(!isZero(up)) {
+            _p0 = _p0.add(_vUp.scale(up));
+        }
+        if(!isZero(right)) {
+            _p0 = _p0.add(_vRight.scale(right));
+        }
+        if(!isZero(to)) {
+            _p0 = _p0.add(_vTo.scale(to));
+        }
+
+        return this;
     }
 
     /**
@@ -178,5 +190,26 @@ public class Camera {
      */
     public double getHeight() {
         return _height;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Camera camera = (Camera) o;
+        return _p0.equals(camera._p0) && _vUp.equals(camera._vUp) && _vTo.equals(camera._vTo);
+    }
+
+    @Override
+    public String toString() {
+        return "Camera{" +
+                "location point = " + _p0 +
+                ", direction right = " + _vRight +
+                ", direction up = " + _vUp +
+                ", direction To = " + _vTo +
+                ", distance from view plane = " + _distance +
+                ", width of the view plane = " + _width +
+                ", height of the view plane = " + _height +
+                '}';
     }
 }

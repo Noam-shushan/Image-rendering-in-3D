@@ -43,9 +43,9 @@ public class Point3D {
      */
     public Point3D add(Vector other) {
         return new Point3D(
-                other.getHead()._x._coord + _x._coord,
-                other.getHead()._y._coord + _y._coord,
-                other.getHead()._z._coord + _z._coord);
+                other.getHead().getX() + _x._coord,
+                other.getHead().getY() + _y._coord,
+                other.getHead().getZ() + _z._coord);
     }
 
     /**
