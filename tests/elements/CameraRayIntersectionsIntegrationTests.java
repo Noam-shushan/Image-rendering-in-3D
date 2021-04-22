@@ -97,7 +97,6 @@ public class CameraRayIntersectionsIntegrationTests {
                 }
             }
         }
-
         assertEquals(expected, count, "The number of intersections found was incorrect");
     }
 }
