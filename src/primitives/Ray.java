@@ -1,6 +1,8 @@
 package primitives;
 
 
+import java.util.List;
+
 /**
  * this class represent a ray by starting point and direction
  * @author Noam Shushan
@@ -49,6 +51,30 @@ public class Ray {
      */
     public Point3D getPoint(double t){
         return _p0.add(_dir.scale(t));
+    }
+
+    /**
+     * find the closest point to the starting point of the ray in list of points
+     * @param pointsList list of points
+     * @return the closest point
+     */
+    public Point3D findClosestPoint(List<Point3D> pointsList){
+        if(pointsList == null){
+            return null;
+        }
+
+        Point3D closestPoint = null;
+        double minDistance = Double.MAX_VALUE;
+
+        for(var point : pointsList){
+            double temp = point.distance(_p0);
+            if(minDistance > temp){
+                closestPoint = point;
+                minDistance = temp;
+            }
+        }
+
+        return closestPoint;
     }
 
     @Override
