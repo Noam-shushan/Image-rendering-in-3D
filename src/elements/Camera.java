@@ -107,6 +107,21 @@ public class Camera {
     }
 
     /**
+     * added by @author Yona Szmerla
+     *
+     * @param axis  turning axis
+     * @param theta angle to turn the camera
+     * @return
+     */
+    public Camera turnCamera(Vector axis, double theta) {
+        if (theta == 0) return this;
+        this._vUp.rotateVector(axis, theta);
+        this._vRight.rotateVector(axis, theta);
+        this._vTo.rotateVector(axis, theta);
+        return this;
+    }
+
+    /**
      * set the view plane size
      * @param width the width of the view plane
      * @param height the height of the view plane

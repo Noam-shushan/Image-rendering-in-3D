@@ -1,4 +1,4 @@
-package renderer;;
+package renderer;
 
 
 import elements.*;
@@ -8,6 +8,8 @@ import scene.Scene;
 
 
 import org.junit.jupiter.api.Test;
+import xmlParser.XmlParser;
+
 import static org.junit.jupiter.api.Assertions.*;
 /**
  * Test rendering a basic image
@@ -48,24 +50,57 @@ public class RenderTests {
         render.writeToImage();
     }
 
-//    /**
-//     * Test for XML based scene - for bonus
-//     */
-//    @Test
-//    public void basicRenderXml() {
-//        Scene scene = new Scene("XML Test scene");
-//        // enter XML file name and parse from XML file into scene object
-//        // ...
-//
-//        ImageWriter imageWriter = new ImageWriter("xml render test", 1000, 1000);
-//        Render render = new Render() //
-//                .setImageWriter(imageWriter) //
-//                .setScene(scene) //
-//                .setCamera(camera) //
-//                .setRayTracer(new BasicRayTracer(scene));
-//
-//        render.renderImage();
-//        render.printGrid(100, new Color(java.awt.Color.YELLOW));
-//        render.writeToImage();
-//    }
+    @Test
+    void test1(){
+        Scene scene =  new Scene.SceneBuilder("my scene")
+                .setAmbientLight(new AmbientLight(new Color(137, 185, 208), 1))
+                .setBackground(new Color(192, 185, 208))
+                .setGeometries(
+                        new Geometries(
+                            new Sphere(60, new Point3D(0, 0, -100)),
+                            new Triangle(
+                                    new Point3D(-70, -70, -100),
+                                    new Point3D(70, -70, -100),
+                                    new Point3D(0, -200, -100)),
+                            new Triangle(
+                                    new Point3D(60, 60, -100),
+                                    new Point3D(-60, 60, -100),
+                                    new Point3D(60, 180, -100)),
+                            new Triangle(
+                                    new Point3D(-60, 180, -100),
+                                    new Point3D(-60, 60, -100),
+                                    new Point3D(60, 180, -100))
+                        ))
+                .build();
+
+        ImageWriter imageWriter = new ImageWriter("basic test", 1000, 1000);
+        Render render = new Render() //
+                .setImageWriter(imageWriter) //
+                .setScene(scene) //
+                .setCamera(camera) //
+                .setRayTracer(new RayTracerBasic(scene));
+
+        render.renderImage();
+        render.writeToImage();
+
+    }
+
+    /**
+     * Test for XML based scene - for bonus
+     */
+    @Test
+    public void basicRenderXml() {
+        Scene scene = XmlParser.readSceneFromXml("XmlFiles/basicRenderTestTwoColors.xml", "XML Test scene");
+
+        ImageWriter imageWriter = new ImageWriter("xml render test", 1000, 1000);
+        Render render = new Render() //
+                .setImageWriter(imageWriter) //
+                .setScene(scene) //
+                .setCamera(camera) //
+                .setRayTracer(new RayTracerBasic(scene));
+
+        render.renderImage();
+        render.printGrid(100, Color.YELLOW);
+        render.writeToImage();
+    }
 }

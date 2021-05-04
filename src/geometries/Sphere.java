@@ -11,7 +11,10 @@ import java.util.List;
  */
 public class Sphere extends RadialGeometry implements Geometry {
 
-    final Point3D _center; // the center of the sphere
+    /**
+     * the center of the sphere
+     */
+    final Point3D _center;
 
     /**
      * Constructor for the Sphere class
@@ -34,7 +37,7 @@ public class Sphere extends RadialGeometry implements Geometry {
     /**
      * the normal of sphere:
      * n = normalize(P - O)
-     * @param p
+     * @param p the point on the sphere we want the normal from
      * @return normal vector
      */
     @Override
@@ -55,6 +58,7 @@ public class Sphere extends RadialGeometry implements Geometry {
      * t1,2∙v => take only if t > 0
      * @param ray ray that cross the sphere
      * @return list of intersection points that were found
+     * @throws IllegalArgumentException if the starting point of the ray equals to the center of the sphere
      */
     @Override
     public List<Point3D> findIntersections(Ray ray) {
