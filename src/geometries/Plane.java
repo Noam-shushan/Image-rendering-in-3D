@@ -5,19 +5,25 @@ import java.util.List;
 import static primitives.Util.*;
 
 /**
- * this class represent a Plane
+ * this class represent a Plane with point and vector normal that standing on the point
  *
  * @author Noam Shushan
  */
 public class Plane implements Geometry {
 
+    /**
+     * the point that the normal stand on
+     */
     final Point3D _q0;
+    /**
+     * the normal that stand on the point
+     */
     final Vector _normal;
 
     /**
-     * Constructor of Plane from starting point and normal vector
+     * Constructor of Plane from point and vector normal that standing on the point
      * @param p0 the point were the normal is point from
-     * @param normal the normal of the plane
+     * @param normal the normal that stand on the point
      */
     public Plane(Point3D p0, Vector normal) {
         _q0 = p0;
@@ -53,6 +59,7 @@ public class Plane implements Geometry {
     }
 
     /**
+     * get the vector normal of the plane, it is the same normal for every point on the plane
      * @param point dummy point not use for flat geometries
      *              should be assigned null value
      * @return normal to the plane

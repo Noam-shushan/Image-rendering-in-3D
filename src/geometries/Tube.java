@@ -7,17 +7,21 @@ import java.util.List;
 import static primitives.Util.*;
 
 /**
- * this class represent a Tube
+ * this class represent an infinite Tube by radius and ray
  *
  * @author Noam Shushan
  */
 public class Tube extends RadialGeometry implements Geometry {
+    /**
+     * the ray of the tube
+     */
     final Ray _axisRay;
 
     /**
      * Constructor for Tube
      * @param axisRay the ray of the tube
      * @param radius the radius of the tube
+     * @throws IllegalArgumentException if radius < 0
      */
     public Tube(double radius, Ray axisRay) {
         super(radius);
@@ -29,17 +33,22 @@ public class Tube extends RadialGeometry implements Geometry {
      * calculation of the normal:
      * t = v*(p - p0)
      * O = p0 + t*v
-     * N = normalize(P - O)
+     * N = normalize(p - O)
      *
-     * @param point should be null for flat geometries
-     * @return the normal to the geometry
+     * @param point the point to get the normal from
+     * @return vector normal to to the tube from the point
+     * @throws IllegalArgumentException if the point is equal to the O in the
+     * formula above because we get vector zero
      */
     @Override
     public Vector getNormal(Point3D point) {
-        Vector p_p0 = point.subtract(_axisRay.getP0());
-        double t = _axisRay.getDir().dotProduct(p_p0);
+        Point3D p0 = _axisRay.getP0();
+        Vector v = _axisRay.getDir();
 
-        Point3D O = _axisRay.getP0().add(p_p0.scale(t));
+        Vector p_p0 = point.subtract(p0);
+        double t = v.dotProduct(p_p0);
+
+        Point3D O = p0.add(p_p0.scale(t));
         if (O.equals(point))
             throw new IllegalArgumentException("point cannot be equal to O");
 

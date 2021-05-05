@@ -8,13 +8,12 @@ import scene.Scene;
 
 
 import org.junit.jupiter.api.Test;
+import xmlParser.SceneDescriptor;
 import xmlParser.XmlParser;
 
 import static org.junit.jupiter.api.Assertions.*;
 /**
  * Test rendering a basic image
- *
- * @author Dan
  */
 public class RenderTests {
     private Camera camera = new Camera(Point3D.ZERO, new Vector(0, 0, -1), new Vector(0, -1, 0)) //
@@ -90,7 +89,9 @@ public class RenderTests {
      */
     @Test
     public void basicRenderXml() {
-        Scene scene = XmlParser.readSceneFromXml("XmlFiles/basicRenderTestTwoColors.xml", "XML Test scene");
+        var rootElement = XmlParser.readXml("xmlFiles/basicRenderTestTwoColors.xml");
+        SceneDescriptor sd = new SceneDescriptor(rootElement,"XML Test scene");
+        Scene scene = sd.getSceneResult();
 
         ImageWriter imageWriter = new ImageWriter("xml render test", 1000, 1000);
         Render render = new Render() //

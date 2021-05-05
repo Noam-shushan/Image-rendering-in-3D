@@ -6,7 +6,7 @@ import static primitives.Util.*;
 import java.util.List;
 
 /**
- * this class represent a sphere
+ * this class represent a sphere by center point and radius
  * @author  Noam Shushan
  */
 public class Sphere extends RadialGeometry implements Geometry {
@@ -18,8 +18,9 @@ public class Sphere extends RadialGeometry implements Geometry {
 
     /**
      * Constructor for the Sphere class
-     * @param center the center of the sphere
+     * @param center the center point of the sphere
      * @param radius the radius of the sphere
+     * @throws IllegalArgumentException if radius < 0
      */
     public Sphere(double radius, Point3D center) {
         super(radius);

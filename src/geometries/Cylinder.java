@@ -7,14 +7,18 @@ import java.util.List;
 import static primitives.Util.alignZero;
 
 /**
- * this a class represent a Cylinder
+ * this a class represent a final Cylinder by radius, ray and height
  *
  * @author Noam Shushan
  */
 public class Cylinder extends Tube{
-    final double _height; // the height of the Cylinder
-    final Plane _base1;
-    final Plane _base2;
+    /**
+     * the height of the Cylinder
+     * most be greater then zero
+     */
+    final double _height;
+    private final Plane _base1; // the first base
+    private final Plane _base2; // the second base
 
     /**
      * Constructor of the Cylinder
@@ -22,15 +26,27 @@ public class Cylinder extends Tube{
      * @param axisRay the ray of the Tube
      * @param radius the radius of the Tube
      * @param height the height of the cylinder
+     * @throws IllegalArgumentException if radius < 0 or the height < 0
      */
     public Cylinder(double radius, Ray axisRay, double height) {
         super(radius ,axisRay);
+
+        if(height < 0){
+            throw new IllegalArgumentException("height most be greater then zero");
+        }
+
         _height = height;
-        Vector v = _axisRay.getDir();
+
+         Vector v = _axisRay.getDir();
         _base1 = new Plane(_axisRay.getP0(), v);
         _base2= new Plane(_axisRay.getPoint(_height), v);
     }
 
+    /**
+     * get ths normal from some point on the cylinder
+     * @param point the point to get the normal from
+     * @return vector normal to to the cylinder from the point
+     */
     @Override
     public Vector getNormal(Point3D point) {
         Point3D p0 = _axisRay.getP0();
@@ -55,18 +71,13 @@ public class Cylinder extends Tube{
         }
     }
 
+    /**
+     * find intersections with cylinder
+     * @param ray ray intersecting with the cylinder
+     * @return list of intersections can be max of 2 points
+     */
     @Override
     public List<Point3D> findIntersections(Ray ray) {
-//        //todo rethink the all thing
-//        List<Point3D> result = super.findIntersections(ray);
-//        if(result != null){
-//            Point3D p = result.get(0);
-//            Vector v = p.subtract(_axis.getP0());
-//           //todo
-//        }
-//        //todo do the caps
-//        return result;
-
         Vector vAxis = _axisRay.getDir();
         Vector v = ray.getDir();
         Point3D p0 = ray.getP0();

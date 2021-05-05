@@ -7,7 +7,7 @@ import static primitives.Util.checkSign;
 import java.util.List;
 
 /**
- * this class represent a Triangle
+ * this class represent a Triangle by 3 points
  * @author Noam Shushan
  */
 public class Triangle extends Polygon {
