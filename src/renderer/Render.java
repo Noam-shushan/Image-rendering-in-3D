@@ -60,7 +60,8 @@ public class Render {
             }
 
         } catch(MissingResourceException e){
-            throw new UnsupportedOperationException("Not implemented yet" + e.getClassName());
+            throw new UnsupportedOperationException("missing resources in order to create the image"
+                    + e.getClassName());
         }
     }
 

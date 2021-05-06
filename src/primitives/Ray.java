@@ -1,6 +1,8 @@
 package primitives;
 
 
+import static geometries.Intersectable.GeoPoint;
+
 import java.util.List;
 
 /**
@@ -51,6 +53,30 @@ public class Ray {
      */
     public Point3D getPoint(double t){
         return _p0.add(_dir.scale(t));
+    }
+
+    /**
+     * find the closest point to the starting point of the ray in list of GeoPoints
+     * @param geoPoints list of GeoPoints
+     * @return the closest GeoPoint
+     */
+    public GeoPoint findClosestGeoPoint(List<GeoPoint> geoPoints){
+        if(geoPoints == null){
+            return null;
+        }
+
+        GeoPoint closesGeoPoint = null;
+        double minDistance = Double.MAX_VALUE;
+
+        for(var geoPoint : geoPoints){
+            double temp = geoPoint.point.distance(_p0);
+            if(minDistance > temp){
+                closesGeoPoint = geoPoint;
+                minDistance = temp;
+            }
+        }
+
+        return closesGeoPoint;
     }
 
     /**

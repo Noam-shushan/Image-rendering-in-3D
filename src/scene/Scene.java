@@ -1,9 +1,12 @@
 package scene;
 
 import elements.AmbientLight;
+import elements.LightSource;
 import geometries.Geometries;
 import primitives.Color;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.MissingResourceException;
 
 /**
@@ -30,6 +33,10 @@ public class Scene {
      * all kind of geometries elements like sphere, triangle, plane ect'
      */
     public Geometries geometries;
+    /**
+     * Sources of light in the scene
+     */
+    public List<LightSource> lights;
 
     // private constructor as part of the builder pattern
     private Scene(SceneBuilder builder) {
@@ -37,6 +44,7 @@ public class Scene {
         background = builder._background;
         ambientLight = builder._ambientLight;
         geometries = builder._geometries;
+        lights = builder._lights;
     }
 
     /**
@@ -48,6 +56,7 @@ public class Scene {
         this.background = background;
         return this;
     }
+
     /**
      * setter for ambient Light
      * @param ambientLight the new ambientLight for the scene
@@ -57,6 +66,7 @@ public class Scene {
         this.ambientLight = ambientLight;
         return this;
     }
+
     /**
      * setter for the geometries
      * @param geometries the new geometries for the scene
@@ -68,15 +78,26 @@ public class Scene {
     }
 
     /**
+     * setter for the sources of light in the scene
+     * @param lights the new sources of light for the scene
+     * @return this scene
+     */
+    public Scene setLights(List<LightSource> lights) {
+        this.lights = lights;
+        return this;
+    }
+
+    /**
      * builder pattern design
      */
     public static class SceneBuilder{
 
         // set all fields with default values
         final private String _name;
-        public Color _background = Color.BLACK;
-        public AmbientLight _ambientLight = new AmbientLight(Color.LIGHTGREY, 0);
-        public Geometries _geometries = new Geometries();
+        private Color _background = Color.BLACK;
+        private AmbientLight _ambientLight = new AmbientLight(Color.LIGHTGREY, 0);
+        private Geometries _geometries = new Geometries();
+        private List<LightSource> _lights = new LinkedList<>();
 
         /**
          * Constructor for SceneBuilder
@@ -107,8 +128,14 @@ public class Scene {
                         Geometries.class.getName(), "");
             }
 
+            if (_lights == null) {
+                throw new MissingResourceException("missing resource of lights",
+                        LightSource.class.getName(), "");
+            }
+
             return new Scene(this);
         }
+
         /**
          * setter for background color
          * @param background the new background color
@@ -118,6 +145,7 @@ public class Scene {
             _background = background;
             return this;
         }
+
         /**
          * setter for ambient Light
          * @param ambientLight the new ambientLight for the scene
@@ -127,6 +155,7 @@ public class Scene {
             _ambientLight = ambientLight;
             return this;
         }
+
         /**
          * setter for the geometries
          * @param geometries the new geometries for the scene
@@ -134,6 +163,16 @@ public class Scene {
          */
         public SceneBuilder setGeometries(Geometries geometries) {
             _geometries = geometries;
+            return this;
+        }
+
+        /**
+         * setter for the sources of light in the scene
+         * @param lights the new sources of light for the scene
+         * @return this scene
+         */
+        public SceneBuilder setLights(List<LightSource> lights) {
+            _lights = lights;
             return this;
         }
     }

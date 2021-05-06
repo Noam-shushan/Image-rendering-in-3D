@@ -9,7 +9,7 @@ import static primitives.Util.*;
  *
  * @author Noam Shushan
  */
-public class Plane implements Geometry {
+public class Plane extends Geometry {
 
     /**
      * the point that the normal stand on
@@ -82,7 +82,7 @@ public class Plane implements Geometry {
      * @return list of intersection points that were found => p0 + tv
      */
     @Override
-    public List<Point3D> findIntersections(Ray ray) {
+    public List<GeoPoint> findGeoIntersections(Ray ray) {
         Point3D p0 = ray.getP0();
         Vector v = ray.getDir();
 
@@ -106,9 +106,10 @@ public class Plane implements Geometry {
         double t = alignZero(mone / nv);
 
         if(t > 0){
-            return List.of(ray.getPoint(t));
+            return List.of(new GeoPoint(this,  ray.getPoint(t)));
         }
 
         return null;
     }
+
 }

@@ -9,12 +9,17 @@ import java.util.List;
  * this class represent a sphere by center point and radius
  * @author  Noam Shushan
  */
-public class Sphere extends RadialGeometry implements Geometry {
+public class Sphere extends Geometry {
 
     /**
      * the center of the sphere
      */
     final Point3D _center;
+    /**
+     * the radius of the sphere
+     * most be greater then zero
+     */
+    final double _radius;
 
     /**
      * Constructor for the Sphere class
@@ -23,7 +28,11 @@ public class Sphere extends RadialGeometry implements Geometry {
      * @throws IllegalArgumentException if radius < 0
      */
     public Sphere(double radius, Point3D center) {
-        super(radius);
+        if(radius < 0){
+            throw new IllegalArgumentException("radius most be greater then zero");
+        }
+
+        _radius = radius;
         _center = center;
     }
 
@@ -62,7 +71,7 @@ public class Sphere extends RadialGeometry implements Geometry {
      * @throws IllegalArgumentException if the starting point of the ray equals to the center of the sphere
      */
     @Override
-    public List<Point3D> findIntersections(Ray ray) {
+    public List<GeoPoint> findGeoIntersections(Ray ray) {
         Point3D p0 = ray.getP0();
         Vector v = ray.getDir();
 
@@ -87,15 +96,15 @@ public class Sphere extends RadialGeometry implements Geometry {
             Point3D p1 = ray.getPoint(t1);
             Point3D p2 = ray.getPoint(t2);
 
-            return List.of(p1, p2);
+            return List.of(new GeoPoint(this, p1), new GeoPoint(this, p2));
         }
 
         if(t1 > 0){
-            return List.of(ray.getPoint(t1));
+            return List.of(new GeoPoint(this, ray.getPoint(t1)));
         }
 
         if(t2 > 0){
-            return List.of(ray.getPoint(t2));
+            return List.of(new GeoPoint(this, ray.getPoint(t2)));
         }
 
         return null; // 0 points

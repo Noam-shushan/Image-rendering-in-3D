@@ -70,14 +70,13 @@ public class Cylinder extends Tube{
             return p0_p_vN.length() == _radius ? p0_p_vN.normalize() : N;
         }
     }
-
     /**
      * find intersections with cylinder
      * @param ray ray intersecting with the cylinder
      * @return list of intersections can be max of 2 points
      */
     @Override
-    public List<Point3D> findIntersections(Ray ray) {
+    public List<GeoPoint> findGeoIntersections(Ray ray){
         Vector vAxis = _axisRay.getDir();
         Vector v = ray.getDir();
         Point3D p0 = ray.getP0();
@@ -86,7 +85,7 @@ public class Cylinder extends Tube{
         Point3D p2;
 
         // intersections of the ray with infinite cylinder {without the bases)
-        List<Point3D> intersections = super.findIntersections(ray);
+        var intersections = super.findGeoIntersections(ray);
         double vAxisV = alignZero(vAxis.dotProduct(v)); // cos(angle between ray directions)
 
         if (intersections == null) { // no intersections with the infinite cylinder
@@ -102,33 +101,38 @@ public class Cylinder extends Tube{
             } catch (Exception e) { // the rays start at the same point
                 // check whether the ray goes into the cylinder
                 return vAxisV > 0 ? //
-                        List.of(ray.getPoint(_height)) : null;
+                        List.of(new GeoPoint(this, ray.getPoint(_height))) : null;
             }
 
             double t1 = alignZero(vP0PC.dotProduct(v)); // project Pc (O1) on the ray
             p1 = ray.getPoint(t1); // intersection point with base1
 
             // Check the distance between the rays
-            if (alignZero(p1.distance(pC) - _radius) >= 0)
+            if (alignZero(p1.distance(pC) - _radius) >= 0){
                 return null;
+            }
 
             // intersection points with base2
             double t2 = alignZero(vAxisV > 0 ? t1 + _height : t1 - _height);
             p2 = ray.getPoint(t2);
             // the ray goes through the bases - test bases vs. ray head and return points
             // accordingly
-            if (t1 > 0 && t2 > 0)
-                return List.of(p1, p2);
-            if (t1 > 0)
-                return List.of(p1);
-            if (t2 > 0)
-                return List.of(p2);
+            if (t1 > 0 && t2 > 0){
+                return List.of(new GeoPoint(this, p1), new GeoPoint(this, p2));
+            }
+
+            if (t1 > 0){
+                return List.of(new GeoPoint(this, p1));
+            }
+            if (t2 > 0){
+                return List.of(new GeoPoint(this, p2));
+            }
             return null;
         }
 
         // Ray - infinite cylinder intersection points
-        p1 = intersections.get(0);
-        p2 = intersections.get(1);
+        p1 = intersections.get(0).point;
+        p2 = intersections.get(1).point;
 
         // get projection of the points on the axis vs. base1 and update the
         // points if both under base1 or they are from different sides of base1
@@ -136,12 +140,17 @@ public class Cylinder extends Tube{
         double p2OnAxis = alignZero(p2.subtract(pC).dotProduct(vAxis));
         var pTemp = _base1.findIntersections(ray);
         if(pTemp != null){
-            if (p1OnAxis < 0 && p2OnAxis < 0)
+            if (p1OnAxis < 0 && p2OnAxis < 0){
                 p1 = null;
-            else if (p1OnAxis < 0)
+            }
+            else if (p1OnAxis < 0){
                 p1 = _base1.findIntersections(ray).get(0);
-            else
-                /* p2OnAxis < 0 */ p2 = _base1.findIntersections(ray).get(0);
+            }
+            else{
+                /* p2OnAxis < 0 */
+                p2 = _base1.findIntersections(ray).get(0);
+            }
+
         }
 
         // get projection of the points on the axis vs. base2 and update the
@@ -156,15 +165,18 @@ public class Cylinder extends Tube{
             /* p2OnAxisMinusH > 0 */ p2 = _base2.findIntersections(ray).get(0);
 
         // Check the points and return list of points accordingly
-        if (p1 != null && p2 != null)
-            return List.of(p1, p2);
-        if (p1 != null)
-            return List.of(p1);
-        if (p2 != null)
-            return List.of(p2);
+        if (p1 != null && p2 != null){
+            return List.of(new GeoPoint(this, p1), new GeoPoint(this, p2));
+        }
+        if (p1 != null){
+            return List.of(new GeoPoint(this, p1));
+        }
+        if (p2 != null){
+            return List.of(new GeoPoint(this, p2));
+        }
+
         return null;
     }
-
 
     @Override
     public String toString() {

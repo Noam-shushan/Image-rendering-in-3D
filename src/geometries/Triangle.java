@@ -2,7 +2,6 @@ package geometries;
 
 import primitives.*;
 import static primitives.Util.*;
-import static primitives.Util.checkSign;
 
 import java.util.List;
 
@@ -36,11 +35,11 @@ public class Triangle extends Polygon {
      * @return list of intersection points that were found
      */
     @Override
-    public List<Point3D> findIntersections(Ray ray) {
+    public List<GeoPoint> findGeoIntersections(Ray ray){
         Point3D p0 = ray.getP0();
         Vector v = ray.getDir();
 
-        var result = _plane.findIntersections(ray);
+        var result = _plane.findGeoIntersections(ray);
 
         // if there is no intersections with the plane is a fortiori (kal&homer)
         // that there is no intersections with the triangle
@@ -64,7 +63,7 @@ public class Triangle extends Polygon {
         boolean allPositive = x1 > 0 && x2 > 0 && x3 > 0;
 
         if(allNegative || allPositive){
-            return result; // return the intersections with the plane that the triangle is on
+            return List.of(new GeoPoint(this, result.get(0).point)); // return the intersections with the plane that the triangle is on
         }
 
         return null;

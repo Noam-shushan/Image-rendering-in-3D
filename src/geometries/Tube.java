@@ -11,11 +11,16 @@ import static primitives.Util.*;
  *
  * @author Noam Shushan
  */
-public class Tube extends RadialGeometry implements Geometry {
+public class Tube extends Geometry {
     /**
      * the ray of the tube
      */
     final Ray _axisRay;
+    /**
+     * the radius of the sphere
+     * most be greater then zero
+     */
+    final double _radius;
 
     /**
      * Constructor for Tube
@@ -24,7 +29,11 @@ public class Tube extends RadialGeometry implements Geometry {
      * @throws IllegalArgumentException if radius < 0
      */
     public Tube(double radius, Ray axisRay) {
-        super(radius);
+        if(radius < 0){
+            throw new IllegalArgumentException("radius most be greater then zero");
+        }
+
+        _radius = radius;
         _axisRay = axisRay;
     }
 
@@ -64,7 +73,7 @@ public class Tube extends RadialGeometry implements Geometry {
      * @return intersection points
      */
     @Override
-    public List<Point3D> findIntersections(Ray ray) {
+    public List<GeoPoint> findGeoIntersections(Ray ray) {
         Vector vAxis = _axisRay.getDir();
         Vector v = ray.getDir();
         Point3D p0 = ray.getP0();
@@ -95,10 +104,10 @@ public class Tube extends RadialGeometry implements Geometry {
             deltaP = p0.subtract(_axisRay.getP0());
         } catch (IllegalArgumentException e1) { // the ray begins at axis P0
             if (vVa == 0) // the ray is orthogonal to Axis
-                return List.of(ray.getPoint(_radius));
+                return List.of(new GeoPoint(this, ray.getPoint(_radius)));
 
             double t = alignZero(Math.sqrt(_radius * _radius / vMinusVVaVa.lengthSquared()));
-            return t == 0 ? null : List.of(ray.getPoint(t));
+            return t == 0 ? null : List.of(new GeoPoint(this, ray.getPoint(t)));
         }
 
         double dPVAxis = alignZero(deltaP.dotProduct(vAxis));
@@ -112,7 +121,7 @@ public class Tube extends RadialGeometry implements Geometry {
                 dPMinusdPVaVa = deltaP.subtract(dPVaVa);
             } catch (IllegalArgumentException e1) {
                 double t = alignZero(Math.sqrt(_radius * _radius / a));
-                return t == 0 ? null : List.of(ray.getPoint(t));
+                return t == 0 ? null : List.of(new GeoPoint(this, ray.getPoint(t)));
             }
         }
 
@@ -137,8 +146,10 @@ public class Tube extends RadialGeometry implements Geometry {
 
         // if both t1 and t2 are positive
         if (t2 > 0)
-            return List.of(ray.getPoint(t1), ray.getPoint(t2));
+            return List.of(
+                    new GeoPoint(this, ray.getPoint(t1)),
+                    new GeoPoint(this, ray.getPoint(t2)));
         else // t2 is behind the head
-            return List.of(ray.getPoint(t1));
+            return List.of(new GeoPoint(this, ray.getPoint(t1)));
     }
 }
