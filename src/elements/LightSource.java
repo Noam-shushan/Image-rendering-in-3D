@@ -3,7 +3,8 @@ package elements;
 import primitives.*;
 
 /**
- *
+ * interface for light sources in some scene
+ * @author Noam Shushan
  */
 public interface LightSource {
     /**
@@ -11,12 +12,12 @@ public interface LightSource {
      * @param p The point where the light strikes
      * @return the color of the point
      */
-    public Color getIntensity(Point3D p);
+    Color getIntensity(Point3D p);
 
     /**
      * get the the direction of the light to the point where its strikes
      * @param p The point where the light strikes
      * @return the direction of the light to the point
      */
-    public Vector getL(Point3D p);
+    Vector getL(Point3D p);
 }

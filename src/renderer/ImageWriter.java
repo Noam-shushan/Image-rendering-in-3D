@@ -33,8 +33,6 @@ public class ImageWriter {
      * Image Writer constructor accepting image name and View Plane parameters,
      *
      * @param imageName the name of jpeg file
-    //     * @param width     View Plane width in size units
-    //     * @param height    View Plane height in size units
      * @param nX        amount of pixels by Width
      * @param nY        amount of pixels by height
      */

@@ -3,8 +3,10 @@ package elements;
 import primitives.*;
 
 /**
- * Model omni-directional point source
- * the light is get out from certain point, and it as some attenuation coefficients of light
+ * this class represent a point light like normal lamp.
+ * with point that represent the position of the lamp and
+ * the intensity of the light that depends on some variables related to the pong model
+ * @author Noam Shushan
  */
 public class PointLight extends Light implements LightSource {
 
@@ -15,29 +17,20 @@ public class PointLight extends Light implements LightSource {
 
     /**
      * kC - Its purpose is to ensure that the light is not strengthened but weakened
-     * kL - Coefficient of attenuation of light linear dependence
-     * kQ - Coefficient of attenuation of light quadratic dependence
+     * kL - reduce factor of attenuation of light linear dependence
+     * kQ - reduce factor of attenuation of light quadratic dependence
      */
-    private final double _kC, _kL, _kQ;
+    private double _kC = 1, _kL = 0, _kQ = 0;
+
 
     /**
      * constructor for PointLight
      * @param intensity the light intensity
      * @param position Light start location
-     * @param kC A constance coefficient of attenuation of light
-     * @param kL Coefficient of attenuation of light linear dependence
-     * @param kQ Coefficient of attenuation of light quadratic dependence
-     * @throws IllegalArgumentException if kI <= 0 or kQ <= 0
      */
-    public PointLight(Color intensity, Point3D position, double kC, double kL, double kQ) {
+    public PointLight(Color intensity, Point3D position) {
         super(intensity);
-        if(kL <= 0 || kC <= 0){
-            throw new IllegalArgumentException("kI or kC most be greater the 0");
-        }
         _position = position;
-        _kC = kC;
-        _kL = kL;
-        _kQ = kQ;
     }
 
     /**
@@ -47,15 +40,15 @@ public class PointLight extends Light implements LightSource {
      */
     @Override
     public Color getIntensity(Point3D p) {
-        double d = p.distance(_position);
+        double dist = p.distance(_position);
 
-        if(d <= 0){
+        if(dist <= 0){
             return getIntensity();
         }
 
-        double t = 1 / (_kC + d * _kL + (d*d) * _kQ);
+        double factor = (_kC + dist * _kL + (dist*dist) * _kQ);
 
-        return getIntensity().scale(t);
+        return getIntensity().reduce(factor);
     }
 
     /**
@@ -68,5 +61,35 @@ public class PointLight extends Light implements LightSource {
     public Vector getL(Point3D p) {
         Vector dir = p.subtract(_position);
         return dir.normalize();
+    }
+
+    /**
+     * setter for kC reduce factor
+     * @param kC new kC
+     * @return this PointLight
+     */
+    public PointLight setKc(double kC){
+        _kC = kC;
+        return this;
+    }
+
+    /**
+     * setter for kL reduce factor
+     * @param kL new kL
+     * @return this PointLight
+     */
+    public PointLight setKl(double kL) {
+        _kL = kL;
+        return this;
+    }
+
+    /**
+     * setter for kQ reduce factor
+     * @param kQ new kQ
+     * @return this PointLight
+     */
+    public PointLight setKq(double kQ) {
+        _kQ = kQ;
+        return this;
     }
 }

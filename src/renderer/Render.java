@@ -17,10 +17,6 @@ public class Render {
      */
     ImageWriter _imageWriter = null;
     /**
-     * Handle the geometric shape and the colors
-     */
-    Scene _scene = null;
-    /**
      * Perspective on the scene
      */
     Camera _camera = null;
@@ -38,9 +34,6 @@ public class Render {
         try {
             if (_imageWriter == null) {
                 throw new MissingResourceException("missing resource", ImageWriter.class.getName(), "");
-            }
-            if (_scene == null) {
-                throw new MissingResourceException("missing resource", Scene.class.getName(), "");
             }
             if (_camera == null) {
                 throw new MissingResourceException("missing resource", Camera.class.getName(), "");
@@ -109,15 +102,6 @@ public class Render {
         return this;
     }
 
-    /**
-     * setter to the scene
-     * @param scene the new scene
-     * @return this render
-     */
-    public Render setScene(Scene scene) {
-        _scene = scene;
-        return this;
-    }
     /**
      * setter to the camera
      * @param camera the new camera

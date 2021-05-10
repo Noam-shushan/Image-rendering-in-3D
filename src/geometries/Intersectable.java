@@ -18,7 +18,7 @@ public interface Intersectable {
      * within a scene, we want to calculate color
      * at a certain point for the geometry
      */
-    public static class GeoPoint{
+    class GeoPoint{
         /**
          * the geometry that we find the color of a certain point
          */

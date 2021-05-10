@@ -6,6 +6,7 @@ import primitives.Vector;
 
 /**
  * Directional Light with constant light intensity and direction
+ * @author Noam Shushan
  */
 public class DirectionalLight extends Light implements LightSource{
     /**
@@ -15,11 +16,12 @@ public class DirectionalLight extends Light implements LightSource{
 
     /**
      * Constructor for Directional Light
-     * @param intensity
+     * @param intensity the light intensity
+     * @param direction the direction of the light
      */
-    protected DirectionalLight(Color intensity, Vector direction) {
+    public DirectionalLight(Color intensity, Vector direction) {
         super(intensity);
-        _direction = direction;
+        _direction = direction.normalized();
     }
 
     /**

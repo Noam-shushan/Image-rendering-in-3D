@@ -3,12 +3,13 @@ package elements;
 import primitives.Color;
 
 /**
- *
+ * abstract class to represent light intensity
+ * @author Noam Shushan
  */
 abstract class Light {
 
     /**
-     * the intensity of the ambient light
+     * the light intensity
      */
     final private Color _intensity;
 

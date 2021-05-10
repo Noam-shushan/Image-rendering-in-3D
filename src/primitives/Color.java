@@ -13,9 +13,9 @@ public class Color {
      * The internal fields tx`o maintain RGB components as double numbers from 0 to
      * whatever...
      */
-    private double r = 0.0;
-    private double g = 0.0;
-    private double b = 0.0;
+    private final double r;
+    private final double g;
+    private final double b;
 
     public static final Color BLACK = new Color();
     public static final Color BLUE = new Color(0, 0, 255);
@@ -35,6 +35,7 @@ public class Color {
      * Default constructor - to generate Black Color (privately)
      */
     private Color() {
+        r = g = b = 0.0;
     }
 
     /**
@@ -44,6 +45,7 @@ public class Color {
      * @param r Red component
      * @param g Green component
      * @param b Blue component
+     * @throws IllegalArgumentException if r < 0 or g < 0 or b < 0
      */
     public Color(double r, double g, double b) {
         if (r < 0 || g < 0 || b < 0)
@@ -73,62 +75,6 @@ public class Color {
         r = other.getRed();
         g = other.getGreen();
         b = other.getBlue();
-    }
-
-    /**
-     * Color setter to reset the color to BLACK
-     *
-     * @return the Color object itself for chaining calls
-     */
-    public Color setColor() {
-        r = 0.0;
-        g = 0.0;
-        b = 0.0;
-        return this;
-    }
-
-    /**
-     * Color setter to generate a color according to RGB components Each component
-     * in range 0..255 (for printed white color) or more [for lights]
-     *
-     * @param r Red component
-     * @param g Green component
-     * @param b Blue component
-     * @return the Color object itself for chaining calls
-     */
-    public Color setColor(double r, double g, double b) {
-        if (r < 0 || g < 0 || b < 0)
-            throw new IllegalArgumentException("Negative color component is illegal");
-        this.r = r;
-        this.g = g;
-        this.b = b;
-        return this;
-    }
-
-    /**
-     * Color setter to copy RGB components from another color
-     *
-     * @param other source Color object
-     * @return the Color object itself for chaining calls
-     */
-    public Color setColor(Color other) {
-        r = other.r;
-        g = other.g;
-        b = other.b;
-        return this;
-    }
-
-    /**
-     * Color setter to take components from an base of java.awt.Color object
-     *
-     * @param other java.awt.Color's source object
-     * @return the Color object itself for chaining calls
-     */
-    public Color setColor(java.awt.Color other) {
-        r = other.getRed();
-        g = other.getGreen();
-        b = other.getBlue();
-        return this;
     }
 
     /**
@@ -167,6 +113,7 @@ public class Color {
      *
      * @param k scale factor
      * @return new Color object which is the result of the operation
+     * @throws IllegalArgumentException if k < 0
      */
     public Color scale(double k) {
         if (k < 0)
@@ -179,6 +126,7 @@ public class Color {
      *
      * @param k reduction factor
      * @return new Color object which is the result of the operation
+     * @throws IllegalArgumentException if k < 1
      */
     public Color reduce(double k) {
         if (k < 1)

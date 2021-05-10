@@ -3,17 +3,17 @@ package geometries;
 import primitives.*;
 
 /**
- * interface for all the geometries shape
- * Provides a normal vector for the geometry
+ * abstract class for all the geometries shape
+ * Provides a normal vector for the geometry, emission color and the material
  * @author Noam Shushan
  */
 public abstract class Geometry implements Intersectable {
     /**
      * emission color of any geometry
      */
-    protected Color _emission = Color.BLACK;
+    private Color _emission = Color.BLACK;
     /**
-     *
+     * the material of the geometry
      */
     private Material material = new Material();
 
@@ -36,17 +36,17 @@ public abstract class Geometry implements Intersectable {
     }
 
     /**
-     *
-     * @return
+     * getter for the material of the geometry
+     * @return the material of the geometry
      */
     public Material getMaterial() {
         return material;
     }
 
     /**
-     *
-     * @param material
-     * @return
+     * setter for the material of the geometry
+     * @param material the new material of the geometry
+     * @return this geometry
      */
     public Geometry setMaterial(Material material) {
         this.material = material;

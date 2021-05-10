@@ -95,7 +95,7 @@ public class Scene {
         // set all fields with default values
         final private String _name;
         private Color _background = Color.BLACK;
-        private AmbientLight _ambientLight = new AmbientLight(Color.LIGHTGREY, 0);
+        private AmbientLight _ambientLight = new AmbientLight();
         private Geometries _geometries = new Geometries();
         private List<LightSource> _lights = new LinkedList<>();
 

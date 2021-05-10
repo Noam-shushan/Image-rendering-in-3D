@@ -5,6 +5,7 @@ import scene.Scene;
 
 /**
  * abstract class to rey tracing
+ * @author Noam Shushan
  */
 public abstract class RayTracerBase {
     /**
