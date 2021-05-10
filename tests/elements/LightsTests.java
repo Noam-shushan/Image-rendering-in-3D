@@ -35,8 +35,8 @@ class LightsTests {
             new Point3D(-150, -150, -150),
             new Point3D(-70, 70, -50),
             new Point3D(75, 75, -150));
-    private static Geometry sphere = new Sphere(50, new Point3D(0, 0, -50)) //
-            .setEmission(new Color(java.awt.Color.BLUE)) //
+    private Geometry sphere = new Sphere(50, new Point3D(0, 0, -50)) //
+            .setEmission(Color.BLUE) //
             .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(100));
 
     /**
@@ -205,7 +205,7 @@ class LightsTests {
         scene2.lights.add(new SpotLight(
                 new Color(800, 400, 400),
                 new Point3D(10, -10, -130),
-                new Vector(-2, -2, -1)).setFocus(6)
+                new Vector(-2, -2, -1)).setFocus(12)
                 .setKc(1).setKl(0.0000025).setKq(0.00005));
 
         ImageWriter imageWriter = new ImageWriter("trianglesSpotSharpFocus", 500, 500);
@@ -213,6 +213,25 @@ class LightsTests {
                 .setImageWriter(imageWriter) //
                 .setCamera(camera2) //
                 .setRayTracer(new RayTracerBasic(scene2));
+        render.renderImage();
+        render.writeToImage();
+    }
+
+    @Test
+    public void sphereSpotFocus() {
+        scene1.geometries.add(sphere
+                .setEmission(new Color(148, 183, 176))
+                .setMaterial(sphere.getMaterial().setShininess(150)));
+        scene1.lights.add(new SpotLight(
+                new Color(500, 300, 0), new Point3D(-50, -50, 50), new Vector(1, 1, -2))
+                .setFocus(50)
+                .setKc(1).setKl(0.00000001).setKq(0.00001));
+
+        ImageWriter imageWriter = new ImageWriter("sphereSpotWithFocus", 500, 500);
+        Render render = new Render()//
+                .setImageWriter(imageWriter) //
+                .setCamera(camera1) //
+                .setRayTracer(new RayTracerBasic(scene1));
         render.renderImage();
         render.writeToImage();
     }

@@ -2,7 +2,6 @@ package renderer;
 
 import static geometries.Intersectable.GeoPoint;
 
-import elements.LightSource;
 import primitives.*;
 
 import static primitives.Util.*;
@@ -18,7 +17,6 @@ public class RayTracerBasic extends RayTracerBase {
 
     /**
      * constructor for RayTracerBasic
-     *
      * @param scene the scene
      */
     public RayTracerBasic(Scene scene) {
@@ -50,8 +48,8 @@ public class RayTracerBasic extends RayTracerBase {
      * According to the pong model
      * This model is additive in which we connect all the components that will eventually
      * make up an image with background colors, self-colors and texture colors.
-     *
      * @param geoPoint the geometry and the lighted point at him
+     * @param ray the ray that goes out of the camera
      * @return the color at the point
      */
     private Color calcColor(GeoPoint geoPoint, Ray ray) {
@@ -74,7 +72,7 @@ public class RayTracerBasic extends RayTracerBase {
         // the angle between n and v give as the the range of the diffusive and specularity
         double nv = alignZero(n.dotProduct(v));
         // The effects of light are not noticeable if our point of view is orthogonal to the object
-        if (isZero(nv)) {
+        if (nv == 0) {
             return Color.BLACK;
         }
         // get the reduces factors of geometry to computer specular and diffusive effects
@@ -83,15 +81,15 @@ public class RayTracerBasic extends RayTracerBase {
 
         Color color = Color.BLACK;
         // Computer the total color at the point from all light sources
-        for (LightSource lightSource : _scene.lights) {
+        for (var lightSource : _scene.lights) {
             Vector l = lightSource.getL(intersection.point);
             double nl = alignZero(n.dotProduct(l));
 
             if (nl * nv > 0) { // sign(nl) == sing(nv) to find out if the vectors l and n ar not negative directions
                 Color lightIntensity = lightSource.getIntensity(intersection.point);
                 color = color
-                        .add(calcDiffusive(kd, l, n, lightIntensity),
-                                calcSpecular(ks, l, n, v, nShininess, lightIntensity));
+                        .add(calcDiffusive(kd, nl, lightIntensity),
+                                calcSpecular(ks, l, n, nl, v, nShininess, lightIntensity));
             }
         }
 
@@ -103,31 +101,31 @@ public class RayTracerBasic extends RayTracerBase {
      * @param ks Percentage of energy going towards the part of the specular
      * @param l direction of the light to the point on the geometry
      * @param n the normal vector of the geometry
+     * @param nl the angle between the normal and the direction from the light to the point
      * @param v the direction from the camera to the point
      * @param nShininess The amount of shininess that goes from the object in which the light strikes
      * @param lightIntensity light intensity from the light source
      * @return the color of the specular light
      */
-    private Color calcSpecular(double ks, Vector l, Vector n, Vector v, double nShininess, Color lightIntensity) {
+    private Color calcSpecular(double ks, Vector l, Vector n, double nl, Vector v, double nShininess, Color lightIntensity) {
         Vector negV = v.scale(-1);
-        double ln = l.dotProduct(n);
         // vector r is the direction of thr reflection of the light from the point at the geometry
-        Vector r = l.add(n.scale(-2 * ln));
+        Vector r = l.add(n.scale(-2 * nl));
+
         double vr = negV.dotProduct(r);
+
         return lightIntensity.scale(ks * Math.pow(Math.max(0, vr), nShininess));
     }
 
     /**
      * Calculates the color of the diffusive light as part of a pong model
      * @param kd Percentage of energy going towards the part of the diffusive
-     * @param l direction of the light to the point on the geometry
-     * @param n the normal vector of the geometry
+     * @param nl the angle between the normal and the direction from the light to the point
      * @param lightIntensity light intensity from the light source
      * @return the color of the diffusive light
      */
-    private Color calcDiffusive(double kd, Vector l, Vector n, Color lightIntensity) {
-        // the angle between the normal and the direction from the light to the point
-        double factor = kd * Math.abs(l.dotProduct(n));
+    private Color calcDiffusive(double kd, double nl, Color lightIntensity) {
+        double factor = kd * Math.abs(nl);
         return lightIntensity.scale(factor);
     }
 }
