@@ -149,41 +149,38 @@ public class Vector {
         return _head;
     }
 
-    public static double getAngle(Vector u, Vector v){
-        return Math.acos(u.dotProduct(v) / (u.length() * v.length()) );
+    /**
+     * get the angle between this vector to other vector
+     * @param v the other vector to calculate the angle between
+     * @return the angle between v and this vector
+     */
+    public double getAngleBetween(Vector v){
+        return Util.alignZero(Math.acos(this.dotProduct(v) / (this.length() * v.length())));
     }
 
     /**
-     * @param axis axis of rotation
-     * @param theta angle of rotation
-     *
-     * @author Yona Szmerla
+     * rotate vector according to the Rodrigues' rotation formula
+     * @param axis the axis vector of rotation
+     * @param theta angle θ according to the right hand rule
      */
     public void rotateVector(Vector axis, double theta) {
-        double x = this._head.getX();
-        double y = this._head.getY();
-        double z = this._head.getZ();
-
-        double u = axis._head.getX();
-        double v = axis._head.getY();
-        double w = axis._head.getZ();
-
-        double v1 = u * x + v * y + w * z;
+        double kv = Util.alignZero(axis.dotProduct(this));
+        if(kv == 0){
+            return;
+        }
 
         double thetaRad = Math.toRadians(theta);
 
-        double xPrime = u * v1 * (1d - Math.cos(thetaRad))
-                + x * Math.cos(thetaRad)
-                + (-w * y + v * z) * Math.sin(thetaRad);
+        try {
+            Vector kkv = axis.scale(kv * (1d - Math.cos(thetaRad)));
 
-        double yPrime = v * v1 * (1d - Math.cos(thetaRad))
-                + y * Math.cos(thetaRad)
-                + (w * x - u * z) * Math.sin(thetaRad);
+            Vector kXvSinT = axis.crossProduct(this).scale(Math.sin(thetaRad));
 
-        double zPrime = w * v1 * (1d - Math.cos(thetaRad))
-                + z * Math.cos(thetaRad)
-                + (-v * x + u * y) * Math.sin(thetaRad);
+            Vector vCosT = this.scale(Math.cos(thetaRad));
 
-        this._head = new Point3D(xPrime, yPrime, zPrime);
+            this._head = kkv.add(kXvSinT).add(vCosT)._head;
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        }
     }
 }

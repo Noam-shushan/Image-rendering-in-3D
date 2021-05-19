@@ -15,7 +15,7 @@ public class SpotLight extends PointLight{
     /**
      * focus the light to get a beam of light that is bounded like a flashlight
      */
-    private double _focus = 1;
+    private double _focus = 1d;
 
     /**
      * constructor for SpotLight

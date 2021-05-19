@@ -14,13 +14,18 @@ public class PointLight extends Light implements LightSource {
      * The point from which the light comes out
      */
     protected final Point3D _position;
-
     /**
      * kC - Its purpose is to ensure that the light is not strengthened but weakened
+     */
+    private double _kC = 1d;
+    /**
      * kL - reduce factor of attenuation of light linear dependence
+     */
+    private double _kL = 0d;
+    /**
      * kQ - reduce factor of attenuation of light quadratic dependence
      */
-    private double _kC = 1, _kL = 0, _kQ = 0;
+    private double _kQ = 0d;
 
 
     /**
@@ -53,14 +58,23 @@ public class PointLight extends Light implements LightSource {
 
     /**
      * get the the direction of the light to the point where its strikes
-     *
      * @param p The point where the light strikes
      * @return the direction of the light to the point
      */
     @Override
     public Vector getL(Point3D p) {
         Vector dir = p.subtract(_position);
-        return dir.normalize();
+        return dir.normalized();
+    }
+
+    /**
+     * get the distance between the starting point of the light source to some point
+     * @param point the point to calculate the distance from
+     * @return the distance between light and the point
+     */
+    @Override
+    public double getDistance(Point3D point) {
+        return _position.distance(point);
     }
 
     /**

@@ -87,10 +87,10 @@ public class Camera {
 
     /**
      * moving the camera from her location
-     * @param up    delta for _vUp vector
-     * @param right delta for _vRight vector
-     * @param to    delta for _vTo vector
-     * @return this
+     * @param up    delta for vUp vector
+     * @param right delta for vRight vector
+     * @param to    delta for vTo vector
+     * @return this camera with the new position
      */
     public Camera moveCamera(double up, double right, double to) {
         if(!isZero(up)) {
@@ -107,17 +107,20 @@ public class Camera {
     }
 
     /**
-     * added by @author Yona Szmerla
-     *
-     * @param axis  turning axis
-     * @param theta angle to turn the camera
-     * @return
+     * Rotate the camera by rotating the vectors of the camera directions
+     * @param axis the axis vector of rotation
+     * @param theta angle θ according to the right hand rule
+     * @return this camera after the rotating
      */
-    public Camera turnCamera(Vector axis, double theta) {
-        if (theta == 0) return this;
-        this._vUp.rotateVector(axis, theta);
-        this._vRight.rotateVector(axis, theta);
-        this._vTo.rotateVector(axis, theta);
+    public Camera rotateCamera(Vector axis, double theta) {
+        if (isZero(theta)){
+            return this;
+        }
+        axis.normalize(); // the vector have to be normalize
+        _vUp.rotateVector(axis, theta);
+        _vRight.rotateVector(axis, theta);
+        _vTo.rotateVector(axis, theta);
+
         return this;
     }
 

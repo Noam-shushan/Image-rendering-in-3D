@@ -3,7 +3,6 @@ package geometries;
 import primitives.*;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -18,7 +17,7 @@ public interface Intersectable {
      * within a scene, we want to calculate color
      * at a certain point for the geometry
      */
-    class GeoPoint{
+    public static class GeoPoint{
         /**
          * the geometry that we find the color of a certain point
          */
@@ -40,8 +39,8 @@ public interface Intersectable {
             GeoPoint geoPoint = (GeoPoint) o;
             return geometry.equals(geoPoint.geometry) && point.equals(geoPoint.point);
         }
-
     }
+
 
     /**
      * find intersections of ray with geometry shape

@@ -19,6 +19,8 @@ public class Ray {
      */
     final Vector _dir;
 
+    private static final double DELTA = 0.1d; // constants for size moving first rays for shading rays
+
     /**
      * Constructor for Ray class
      * generate an object of a Ray from Point3D and Vector
@@ -29,6 +31,23 @@ public class Ray {
         _p0 = p0;
         _dir = dir.normalized();
     }
+
+    /**
+     * constructor for creating a ray with small movement of the starting point
+     * @param point the starting point that on some geometry
+     * @param dir the direction of the ray
+     * @param n normal to the point on some geometry
+     */
+    public Ray(Point3D point, Vector dir, Vector n) {
+        double delta = n.dotProduct(dir) >= 0d ? DELTA : - DELTA;
+        _p0 = point.add(n.scale(delta));
+
+        if(dir.length() != 1d){
+            dir.normalize();
+        }
+        _dir = dir;
+    }
+
 
     /**
      * get the starting point of the ray
@@ -77,30 +96,6 @@ public class Ray {
         }
 
         return closesGeoPoint;
-    }
-
-    /**
-     * find the closest point to the starting point of the ray in list of points
-     * @param pointsList list of points
-     * @return the closest point
-     */
-    public Point3D findClosestPoint(List<Point3D> pointsList){
-        if(pointsList == null){
-            return null;
-        }
-
-        Point3D closestPoint = null;
-        double minDistance = Double.MAX_VALUE;
-
-        for(var point : pointsList){
-            double temp = point.distance(_p0);
-            if(minDistance > temp){
-                closestPoint = point;
-                minDistance = temp;
-            }
-        }
-
-        return closestPoint;
     }
 
     @Override
