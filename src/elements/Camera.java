@@ -39,12 +39,10 @@ public class Camera {
      * @throws IllegalArgumentException if vTo and vUp is not orthogonal
      */
     public Camera(Point3D p0, Vector vTo, Vector vUp) {
-        _p0 = p0;
-
         if(!isZero(vUp.dotProduct(vTo))){
             throw new IllegalArgumentException("The vectors 'up' and and 'to' is not orthogonal");
         }
-
+        _p0 = p0;
         _vUp = vUp.normalized();
         _vTo = vTo.normalized();
         _vRight = _vTo.crossProduct(_vUp).normalized();

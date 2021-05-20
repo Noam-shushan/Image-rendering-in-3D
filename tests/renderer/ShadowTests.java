@@ -138,11 +138,6 @@ public class ShadowTests {
         render.writeToImage();
     }
 
-    @Test
-    void f1(){
-        System.out.println(new Vector(1,1,-3).normalize());
-    }
-
     /**
      * Produce a picture of a two triangles lighted by a spot light with a Sphere
      * producing a shading
