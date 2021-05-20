@@ -41,11 +41,7 @@ public class Ray {
     public Ray(Point3D point, Vector dir, Vector n) {
         double delta = n.dotProduct(dir) >= 0d ? DELTA : - DELTA;
         _p0 = point.add(n.scale(delta));
-
-        if(dir.length() != 1d){
-            dir.normalize();
-        }
-        _dir = dir;
+        _dir = dir.normalized();
     }
 
 
