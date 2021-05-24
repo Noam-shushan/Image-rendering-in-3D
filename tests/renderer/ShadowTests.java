@@ -219,8 +219,7 @@ public class ShadowTests {
         Render render = new Render() //
                 .setImageWriter(new ImageWriter("shadowTrianglesSphereMoveCamera", 600, 600)) //
                 .setCamera(camera
-                        .moveCamera(10, 10,5)
-                        .rotateCamera(new Vector(-1, 1, -1), 5)) //
+                        .rotateCamera(45)) //
                 .setRayTracer(new RayTracerBasic(scene));
         render.renderImage();
         render.writeToImage();

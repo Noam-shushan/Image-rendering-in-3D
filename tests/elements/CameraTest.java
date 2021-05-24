@@ -52,16 +52,4 @@ class CameraTest {
         assertEquals(new Ray(Point3D.ZERO, new Vector(-2, 0, 10)),
                 camera.setViewPlaneSize(6, 6).constructRayThroughPixel(3, 3, 0, 1));
     }
-
-    /**
-     * Test method for
-     * {@link elements.Camera#moveCamera(double, double, double)}.
-     */
-    @Test
-    void moveCamera() {
-        var temp = new Camera(camera.getP0(), camera.get_vTo(), camera.get_vUp())
-                .setDistance(10);
-        temp.moveCamera(2,2,2);
-        assertNotEquals(temp, camera);
-    }
 }

@@ -2,28 +2,39 @@ package geometries;
 import primitives.*;
 
 import java.util.List;
+import static primitives.Util.*;
 
 //TODO need to think of this
 public class Box extends Geometry{
-    //final Point3D[] _points;
+    /**
+     *
+     */
     final Polygon[] _corners;
+
+    private final int NUMBER_OF_CORNERS = 6;
+    private final int NUMBER_OF_POINTS = 8;
 
     /**
      *
      * @param points
      */
-    public Box(Point3D[] points) {
+    public Box(Point3D... points) {
         if(points == null){
             throw new IllegalArgumentException("no points entered");
         }
-        if(points.length != 8){
+        if(points.length != NUMBER_OF_POINTS){
             throw new IllegalArgumentException("Box most have 8 points");
         }
-        //TODO
-        _corners = new Polygon[6];
-        for(int i = 0; i < 6; i += 2){
-            _corners[i] = new Polygon(points[i], points[i+1], points[i+2], points[i+3]);
-        }
+        _corners = new Polygon[NUMBER_OF_CORNERS];
+//        for(int i = 0; i < NUMBER_OF_CORNERS; i += 2){
+//            _corners[i] = new Polygon(points[i], points[i+1], points[i+2], points[i+3]);
+//        }
+        _corners[0] = new Polygon(points[0], points[1], points[2], points[3]);
+        _corners[1] = new Polygon(points[4], points[5], points[6], points[7]);
+        _corners[2] = new Polygon(points[0], points[3], points[7], points[4]);
+        _corners[3] = new Polygon(points[0], points[1], points[5], points[4]);
+        _corners[4] = new Polygon(points[1], points[2], points[6], points[5]);
+        _corners[5] = new Polygon(points[2], points[3], points[7], points[6]);
     }
 
     /**
@@ -34,7 +45,20 @@ public class Box extends Geometry{
      */
     @Override
     public Vector getNormal(Point3D point) {
-        //TODO
+        for(var corner: _corners){
+            Point3D firstPointOfCorner = corner._vertices.get(0);
+            if(firstPointOfCorner.equals(point)){
+                continue;
+            }
+
+            Vector horizontalVecToPlane = point.subtract(firstPointOfCorner);
+            Vector normal = corner.getNormal(null);
+
+            if(isZero(normal.dotProduct(horizontalVecToPlane))){
+                return normal;
+            }
+        }
+
         return null;
     }
 

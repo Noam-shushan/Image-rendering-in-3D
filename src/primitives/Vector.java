@@ -159,28 +159,24 @@ public class Vector {
     }
 
     /**
-     * rotate vector according to the Rodrigues' rotation formula
-     * @param axis the axis vector of rotation
-     * @param theta angle θ according to the right hand rule
+     * rotate the vectors by Rodrigues' rotation formula:
+     * vRot = V * cos(θ) + (K x V) * sin(θ) + K * (K∙V) * (1 - cos(θ))
+     * V is this vector
+     * @param k the axis vector of rotation
+     * @param cosθ cos(θ)
+     * @param sinθ sin(θ)
      */
-    public void rotateVector(Vector axis, double theta) {
-        double kv = Util.alignZero(axis.dotProduct(this));
-        if(kv == 0){
-            return;
+    public void rotateVector(Vector k,  double cosθ, double sinθ) {
+        Vector vRot;
+        if (cosθ == 0) {
+            vRot = k.crossProduct(this).scale(sinθ);
         }
-
-        double thetaRad = Math.toRadians(theta);
-
-        try {
-            Vector kkv = axis.scale(kv * (1d - Math.cos(thetaRad)));
-
-            Vector kXvSinT = axis.crossProduct(this).scale(Math.sin(thetaRad));
-
-            Vector vCosT = this.scale(Math.cos(thetaRad));
-
-            this._head = kkv.add(kXvSinT).add(vCosT)._head;
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
+        else {
+            vRot = this.scale(cosθ);
+            if (sinθ != 0) {
+                vRot = vRot.add(k.crossProduct(this).scale(sinθ));
+            }
         }
+        _head = vRot.normalize()._head;
     }
 }

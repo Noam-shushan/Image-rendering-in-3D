@@ -15,9 +15,17 @@ public class Camera {
      */
     private Point3D _p0;
     /**
-     * the 3 directions of the camera
+     * the the normal in the right direction
      */
-    private final Vector _vRight, _vUp, _vTo;
+    private Vector _vRight;
+    /**
+     * the the normal in the up direction
+     */
+    private Vector _vUp;
+    /**
+     * the the normal in the toward the scene
+     */
+    private Vector _vTo;
     /**
      * the distance from the camera to the view plane
      */
@@ -85,39 +93,47 @@ public class Camera {
 
     /**
      * moving the camera from her location
-     * @param up    delta for vUp vector
-     * @param right delta for vRight vector
-     * @param to    delta for vTo vector
-     * @return this camera with the new position
+     * @param newPosition the new position of the camera
+     * @param newPointOfView new point of view of the camera
+     * @return the new camera from the new position to the new point of view
      */
-    public Camera moveCamera(double up, double right, double to) {
-        if(!isZero(up)) {
-            _p0 = _p0.add(_vUp.scale(up));
-        }
-        if(!isZero(right)) {
-            _p0 = _p0.add(_vRight.scale(right));
-        }
-        if(!isZero(to)) {
-            _p0 = _p0.add(_vTo.scale(to));
-        }
+    public Camera moveCamera(Point3D newPosition, Point3D newPointOfView) {
+        // the new vTo of the the camera
+        Vector new_vTo = newPointOfView.subtract(newPosition).normalized();
+        // the angle between the new vTo and the old
+        double theta = new_vTo.dotProduct(_vTo);
+        // axis vector for the rotation
+        Vector k = _vTo.crossProduct(new_vTo).normalize();
 
-        return this;
+        _vTo = new_vTo;
+        _p0 = newPosition;
+
+        return rotateCamera(theta, k);
     }
 
     /**
      * Rotate the camera by rotating the vectors of the camera directions
-     * @param axis the axis vector of rotation
-     * @param theta angle θ according to the right hand rule
+     * @param theta angle θ according to the right hand rule in degrees
      * @return this camera after the rotating
      */
-    public Camera rotateCamera(Vector axis, double theta) {
-        if (isZero(theta)){
-            return this;
-        }
-        axis.normalize(); // the vector have to be normalize
-        _vUp.rotateVector(axis, theta);
-        _vRight.rotateVector(axis, theta);
-        _vTo.rotateVector(axis, theta);
+    public Camera rotateCamera(double theta) {
+        return rotateCamera(theta, _vTo);
+    }
+
+    /**
+     * Rotate the camera by rotating the vectors of the camera directions
+     * according the Rodrigues' rotation formula
+     * @param θ angle θ according to the right hand rule in degrees
+     * @param k axis vector for the rotation
+     * @return this camera after the rotating
+     */
+    private Camera rotateCamera(double θ, Vector k) {
+        double radianAngle = Math.toRadians(θ);
+        double cosθ = alignZero(Math.cos(radianAngle));
+        double sinθ = alignZero(Math.sin(radianAngle));
+
+        _vRight.rotateVector(k, cosθ, sinθ);
+        _vUp.rotateVector(k, cosθ, sinθ);
 
         return this;
     }

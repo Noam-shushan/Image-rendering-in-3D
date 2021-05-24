@@ -106,7 +106,7 @@ public class MyImages {
                 .setDistance(200);
 
         Render render = new Render()
-                .setImageWriter(new ImageWriter("Tennis table", 1500, 1500))
+                .setImageWriter(new ImageWriter("Tennis table", 500, 500))
                 .setCamera(camera)
                 .setRayTracer(new RayTracerBasic(scene));
         render.renderImage();
@@ -115,7 +115,7 @@ public class MyImages {
     }
 
     @Test
-    void tennisTable2() {
+    void tennisTableRotateCamera() {
         scene.lights.add(
                 new SpotLight(
                         new Color(700, 400, 400),
@@ -131,10 +131,11 @@ public class MyImages {
                 .setDistance(200);
 
         Render render = new Render()
-                .setImageWriter(new ImageWriter("Tennis table different angle", 1500, 1500))
+                .setImageWriter(new ImageWriter("Tennis table different angle", 500, 500))
                 .setCamera(camera
-                        .moveCamera(50, 30, 40)
-                        .rotateCamera(new Vector(-500, -700, -200), 8))
+                        .moveCamera(new Point3D(500, 0, 500), Point3D.ZERO)
+                        .rotateCamera(45)
+                )
                 .setRayTracer(new RayTracerBasic(scene));
         render.renderImage();
         render.writeToImage();
