@@ -9,18 +9,47 @@ import static primitives.Util.*;
 
 import scene.Scene;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
  * Rey tracer
- * calculate the color of point that interact with the ray
+ * calculate the color ray-geometry intersection
  * @author Noam Shushan
  */
 public class RayTracerBasic extends RayTracerBase {
 
-    private static final int MAX_CALC_COLOR_LEVEL = 10;
+    /**
+     * The max level of the recursion attending to get <br/>
+     * reflection and transparency of the geometries that goes to other geometries
+     */
+    private static final int MAX_CALC_COLOR_LEVEL = 6;
+
+    /**
+     * The minimal effect of a color factor for transparency and reflection <br/>
+     * Below that there are no longer any color differences
+     */
     private static final double MIN_CALC_COLOR_K = 0.001d;
-    private static final double INITIAL_K = 1.0d;
+
+    /**
+     * starting value of the effect of a color factor for transparency and reflection
+     */
+    private static final double INITIAL_K = 1d;
+
+    /**
+     * image improvements for glossy of the emission color of the geometry
+     */
+    private boolean _glossy = false;
+
+    /**
+     * image improvements for diffuse of the emission color of the geometry
+     */
+    private boolean _diffuse = false;
+
+    /**
+     * the amount of rays in bean
+     */
+    private int _numOfRaysInBean = 1;
 
     /**
      * constructor for RayTracerBasic
@@ -47,6 +76,34 @@ public class RayTracerBasic extends RayTracerBase {
     }
 
     /**
+     * Add image improvements for diffuse of the emission color of the geometry
+     * @return this RayTracer
+     */
+    public RayTracerBasic setDiffuse(){
+        _diffuse = true;
+        return this;
+    }
+
+    /**
+     * Add image improvements for glossy of the emission color of the geometry
+     * @return this RayTracer
+     */
+    public RayTracerBasic setGlossy(){
+        _glossy = true;
+        return this;
+    }
+
+    /**
+     * setter for the number of rays in bean
+     * @param numOfRaysInBean the new number of rays in bean
+     * @return this render
+     */
+    public RayTracerBasic setNumOfRaysInBean(int numOfRaysInBean) {
+        _numOfRaysInBean = numOfRaysInBean;
+        return this;
+    }
+
+    /**
      * According to the pong model
      * This model is additive in which we connect all the components that will eventually
      * make up an image with background colors, self-colors and texture colors.
@@ -70,6 +127,7 @@ public class RayTracerBasic extends RayTracerBase {
     private Color calcColor(GeoPoint geoPoint, Ray ray, int level, double k) {
         Color color = geoPoint.geometry.getEmission()
                 .add(calcLocalEffects(geoPoint, ray, k));
+
         return 1 == level ? color : color.add(calcGlobalEffects(geoPoint, ray, level, k));
     }
 
@@ -77,13 +135,14 @@ public class RayTracerBasic extends RayTracerBase {
      * Computer lighting effects as at a certain point on geometry
      * @param intersection the geometry and the lighted point at him
      * @param ray the ray from the camera
+     * @param k Represents influencing factors of transparency and reflection
      * @return the total color at the point including the specular and diffusive
      */
     private Color calcLocalEffects(GeoPoint intersection, Ray ray, double k) {
         // the direction of the ray from the camera
         Vector v = ray.getDir();
         // most of the reflected light goes in the direction of the normal to the geometry on the point
-        Vector n = intersection.geometry.getNormal(intersection.point);
+        Vector n = intersection.normal;
         // the angle between n and v give as the the range of the diffusive and specularity
         double nv = alignZero(n.dotProduct(v));
         // The effects of light are not noticeable if our point of view is orthogonal to the object
@@ -104,7 +163,7 @@ public class RayTracerBasic extends RayTracerBase {
 
             if (nl * nv > 0) { // sign(nl) == sing(nv) to find out if the vectors l and n ar not negative directions
                 // ktr is the amount of shadow as a number between 0 and 1
-                double ktr = transparency(lightSource, l, intersection, n);
+                double ktr = transparency(lightSource, l, intersection);
                 if (ktr * k > MIN_CALC_COLOR_K) {
                     Color lightIntensity = lightSource.getIntensity(intersection.point).scale(ktr);
                     color = color
@@ -128,68 +187,139 @@ public class RayTracerBasic extends RayTracerBase {
     private Color calcGlobalEffects(GeoPoint geoPoint, Ray inRay, int level, double k) {
         Color color = Color.BLACK;
         Material material = geoPoint.geometry.getMaterial();
-        Vector n = geoPoint.geometry.getNormal(geoPoint.point);
 
         double kr = material.kR;
         double kkr = k * kr;
 
         if (kkr > MIN_CALC_COLOR_K) { // Recursion stop conditions
-            // create reflected ray to calculate the color of reflection of the geometry
-            Ray reflectedRay = constructReflectedRay(n, geoPoint.point, inRay);
-            // Checks for intersections with the reflection ray
-            GeoPoint reflectedPoint = findClosestIntersection(reflectedRay);
-            if (reflectedPoint != null){
-                color = color.add(calcColor(reflectedPoint, reflectedRay, level - 1, kkr).scale(kr));
-            }
+            // create reflected bean to calculate the color of reflection influences of the geometry
+            var bean = constructReflectedBean(geoPoint, inRay);
+            color = color.add(calcGlobalEffectOfBean(bean, level, kr, kkr));
         }
 
         double kt = material.kT;
         double kkt = k * kt;
         if (kkt > MIN_CALC_COLOR_K) { // Recursion stop conditions
-            // create refracted ray to calculate the color of transparency of the geometry
-            Ray refractedRay = constructRefractedRay(n, geoPoint.point, inRay);
-            // Checks for intersections with the transparency ray
-            GeoPoint refractedPoint = findClosestIntersection(refractedRay);
-            if (refractedPoint != null){
-                color = color.add(calcColor(refractedPoint, refractedRay, level - 1, kkt).scale(kt));
-            }
+            // create refracted bean to calculate the color of transparency influences of the geometry
+            var bean = constructRefractedBean(geoPoint, inRay);
+            color = color.add(calcGlobalEffectOfBean(bean, level, kt, kkt));
         }
+
         return color;
     }
 
     /**
-     * Produces a transparency ray that starts from
-     * the point where the ray hit from the camera and
-     * goes in the direction almost like the original beam
-     * @param n the normal on the point
-     * @param point the point where the ray hit from the camera
-     * @param inRay the ray from the camera
-     * @return transparency ray
+     * calc global effects Of bean of rays
+     * @param bean the bean of rays
+     * @param level the level of the recursion
+     * @param kx Represents influencing factors of transparency and reflection, can be kT or kS
+     * @param kkx effect of a color factor for transparency and reflection
+     * @return the average color of the bean
      */
-    private Ray constructRefractedRay(Vector n, Point3D point, Ray inRay) {
-        return new Ray(point, inRay.getDir(), n);
+    private Color calcGlobalEffectOfBean(List<Ray> bean, int level,  double kx, double kkx){
+        List<Color> colors = new LinkedList<>();
+        for(var ray : bean){
+            GeoPoint geoPoint = findClosestIntersection(ray);
+            if(geoPoint != null){
+                colors.add(calcColor(geoPoint, ray, level - 1, kkx).scale(kx));
+            }
+        }
+        if(colors.size() < 1){
+            return Color.BLACK;
+        }
+        if(colors.size() == 1){
+            return colors.get(0);
+        }
+        return average(colors);
     }
 
     /**
-     * Produces a reflection ray that starts from
+     * calculator the average of list of colors
+     * @param colors the list of colors
+     * @return the average color
+     */
+    private Color average(List<Color> colors) {
+        Color result = Color.BLACK;
+        for(var color : colors){
+            result = result.add(color);
+        }
+        return result.reduce(colors.size());
+    }
+
+    /**
+     * Produces a transparency bean of rays that starts from
+     * the point where the ray hit from the camera and
+     * goes in the direction almost like the original beam
+     * @param geoPoint the point where the ray hit from the camera
+     * @param inRay the ray from the camera
+     * @return transparency ray
+     */
+    private List<Ray> constructRefractedBean(GeoPoint geoPoint, Ray inRay) {
+        Ray mainRefractedRay = new Ray(geoPoint.point, inRay.getDir(), geoPoint.normal);
+        if(_diffuse){
+            // Checks for intersections with the refracted ray
+            GeoPoint refractedPoint = findClosestIntersection(mainRefractedRay);
+            if(refractedPoint != null){
+                return constructBean(mainRefractedRay, refractedPoint.point);
+            }
+            else {
+                return List.of(mainRefractedRay);
+            }
+        } else{
+            return List.of(mainRefractedRay);
+        }
+    }
+
+    /**
+     * Produces a reflection bean that starts from
      * the point where the ray struck from the camera and goes diagonally to the point
-     * @param n the normal on the point
-     * @param point the point where the ray hit from the camera
+     * @param geoPoint the point where the ray hit from the camera
      * @param inRay the ray from the camera
      * @return a reflection ray
      */
-    private Ray constructReflectedRay(Vector n, Point3D point, Ray inRay) {
-        //𝒓 = 𝒗 − 𝟐 ∙ (𝒗 ∙ 𝒏) ∙ 𝒏
+    private List<Ray> constructReflectedBean(GeoPoint geoPoint, Ray inRay) {
         Vector v = inRay.getDir();
         Vector r = null;
         try {
-            double vn = v.dotProduct(n);
-            r = v.subtract(n.scale(2d * vn)).normalized();
+            double vn = v.dotProduct(geoPoint.normal);
+            // r = v - 2*(v * n) * n
+            r = v.subtract(geoPoint.normal.scale(2d * vn)).normalized();
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
-        return new Ray(point, r, n);
+        // create reflected ray to calculate the color of reflection of the geometry
+        Ray mainReflectedRay = new Ray(geoPoint.point, r, geoPoint.normal);
+        if(_glossy){
+            // Checks for intersections with the reflection ray
+            GeoPoint reflectedPoint = findClosestIntersection(mainReflectedRay);
+            if(reflectedPoint != null){
+                return constructBean(mainReflectedRay, reflectedPoint.point);
+            }
+            else{
+                return List.of(mainReflectedRay);
+            }
+        } else{
+            return List.of(mainReflectedRay);
+        }
+    }
+
+    /**
+     * construct bean of rays around the direction of the target point and at the beginning of the main ray
+     * @param mainRay the main ray
+     * @param targetPoint the target point to create rays around her
+     * @return list of rays that start at the origen of the ray and gos around the target point
+     */
+    private List<Ray> constructBean(Ray mainRay, Point3D targetPoint) {
+        var randomPoints = targetPoint.createRandomPointsAround(_numOfRaysInBean, 3);
+        var pOrigen = mainRay.getP0();
+
+        List<Ray> bean = new LinkedList<>();
+        for(var p : randomPoints){
+            Vector dir = p.subtract(pOrigen);
+            bean.add(new Ray(pOrigen, dir));
+        }
+        return bean;
     }
 
     /**
@@ -206,23 +336,6 @@ public class RayTracerBasic extends RayTracerBase {
         return ray.findClosestGeoPoint(points);
     }
 
-    private boolean unshaded(LightSource lightSource, Vector l, GeoPoint geoPoint, Vector n) {
-        Vector lightDirection = l.scale(-1); // from point to light source
-        Ray lightRay = new Ray(geoPoint.point, lightDirection, n);
-        List<GeoPoint> intersections = _scene.geometries.findGeoIntersections(lightRay);
-
-        if (intersections == null)
-            return true;
-
-        double lightDistance = lightSource.getDistance(geoPoint.point);
-        for (GeoPoint gp : intersections) {
-            if (alignZero(gp.point.distance(geoPoint.point) - lightDistance) <= 0)
-                return false;
-        }
-
-        return true;
-    }
-
     /**
      * At each point of intersection A of a ray from the camera with geometry
      * we create a new ray that is sent from A to the light source to
@@ -232,14 +345,13 @@ public class RayTracerBasic extends RayTracerBase {
      * @param lightSource light source of the scene
      * @param l the direction of the light to the point where its strikes
      * @param geoPoint the geometry and the lighted point at him
-     * @param n the direction of the normal to the geometry on the point
      * @return The total amount of transparency in order to get a more accurate shadow as a number between 0 and 1.
      * 1 means that there is no shadow. 0 means full shadow.
      */
-    private double transparency(LightSource lightSource, Vector l, GeoPoint geoPoint, Vector n){
+    private double transparency(LightSource lightSource, Vector l, GeoPoint geoPoint){
         Vector lightDirection = l.scale(-1); // from point to light source
         // create a new ray that is sent from point to the light source
-        Ray lightRay = new Ray(geoPoint.point, lightDirection, n);
+        Ray lightRay = new Ray(geoPoint.point, lightDirection, geoPoint.normal);
         // check if another geometry is blocking us by finding intersections
         var intersections = _scene.geometries.findGeoIntersections(lightRay);
 

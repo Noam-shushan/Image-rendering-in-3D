@@ -5,6 +5,7 @@ import elements.LightSource;
 import geometries.Geometries;
 import primitives.Color;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.MissingResourceException;
@@ -21,24 +22,31 @@ public class Scene {
      * name of the scene
      */
     final public String name;
+
     /**
      * the background color in the scene
      */
     public Color background;
+
     /**
      * the ambient light in the scene
      */
     public AmbientLight ambientLight;
+
     /**
      * all kind of geometries elements like sphere, triangle, plane ect'
      */
     public Geometries geometries;
+
     /**
      * Sources of light in the scene
      */
     public List<LightSource> lights;
 
-    // private constructor as part of the builder pattern
+    /**
+     * private constructor as part of the builder pattern
+     * @param builder the SceneBuilder
+     */
     private Scene(SceneBuilder builder) {
         name = builder._name;
         background = builder._background;
@@ -82,8 +90,8 @@ public class Scene {
      * @param lights the new sources of light for the scene
      * @return this scene
      */
-    public Scene setLights(List<LightSource> lights) {
-        this.lights = lights;
+    public Scene setLights(LightSource... lights) {
+        this.lights.addAll(Arrays.asList(lights));
         return this;
     }
 
@@ -171,8 +179,8 @@ public class Scene {
          * @param lights the new sources of light for the scene
          * @return this scene
          */
-        public SceneBuilder setLights(List<LightSource> lights) {
-            _lights = lights;
+        public SceneBuilder setLights(LightSource... lights) {
+            _lights.addAll(Arrays.asList(lights));
             return this;
         }
     }

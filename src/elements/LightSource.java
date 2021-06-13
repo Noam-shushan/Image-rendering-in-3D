@@ -7,6 +7,7 @@ import primitives.*;
  * @author Noam Shushan
  */
 public interface LightSource {
+
     /**
      * get the intensity of the light in relation to the distance from the point
      * @param p The point where the light strikes

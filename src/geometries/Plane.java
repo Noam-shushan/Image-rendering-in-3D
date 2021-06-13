@@ -31,15 +31,9 @@ public class Plane extends Geometry {
     }
 
     /**
-     * Constructor of Plane from 3 points on its surface
+     * Constructor of Plane from 3 points on its surface <br/>
      * the points are ordered from right to left
-     * forming an arc in right direction
-     * we calculate the normal on the constructor
-     * to avoid repeated request of the normal
-     * the calculation of the normal:
-     * V = P2 - P1
-     * U = P3 - P1
-     * N = normalize( V x U )
+     * we calculate the normal on the constructor to avoid repeated request of the normal
      * @param p1 P1
      * @param p2 P2
      * @param p3 P3
@@ -48,14 +42,22 @@ public class Plane extends Geometry {
     public Plane(Point3D p1, Point3D p2, Point3D p3) {
         _q0 = p1;
 
-        Vector U = p2.subtract(p1);
-        Vector V = p3.subtract(p1);
+        // the calculation of the normal:
+        // V = P2 - P1
+        // U = P3 - P1
+        // N = normalize( V x U )
+        try {
+            Vector U = p2.subtract(p1);
+            Vector V = p3.subtract(p1);
 
-        // if UxV = (0,0,0) this Plane not create because all 3 point on the same line
-        Vector N = U.crossProduct(V);
-        N.normalize();
+            // if UxV = (0,0,0) this Plane not create because all 3 point on the same line
+            Vector N = U.crossProduct(V);
+            N.normalize();
 
-        _normal = N;
+            _normal = N;
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("can not create a plane with all 3 point on the same line");
+        }
     }
 
     /**
@@ -76,8 +78,6 @@ public class Plane extends Geometry {
 
     /**
      * find intersections point with the plane
-     * t = N∙(q0 - p0) / N∙v
-     * if t > 0 point as found
      * @param ray ray that cross the plane
      * @return list of intersection points that were found => p0 + tv
      */
@@ -91,6 +91,9 @@ public class Plane extends Geometry {
         }
 
         Vector n = _normal;
+
+        // t = n∙(q0 - p0) / n∙v
+        // if t > 0 point as found
 
         Vector p0_q0 = _q0.subtract(p0);
         double mone = alignZero(n.dotProduct(p0_q0));
@@ -108,7 +111,6 @@ public class Plane extends Geometry {
         if(t > 0){
             return List.of(new GeoPoint(this,  ray.getPoint(t)));
         }
-
         return null;
     }
 

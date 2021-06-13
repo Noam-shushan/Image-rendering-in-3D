@@ -8,6 +8,7 @@ import scene.Scene;
  * @author Noam Shushan
  */
 public abstract class RayTracerBase {
+
     /**
      * the scene we trace
      */

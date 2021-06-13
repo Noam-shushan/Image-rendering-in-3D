@@ -1,22 +1,35 @@
 package primitives;
 
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Random;
+
+import static primitives.Util.alignZero;
+import static primitives.Util.random;
+
 /**
  * this is a basic point for RayTracing project in 3D
  * @author Noam Shushan
  */
 public class Point3D {
+
     /**
      * x axis
      */
     final Coordinate _x;
+
     /**
      * y axis
      */
     final Coordinate _y;
+
     /**
      * z axis
      */
     final Coordinate _z;
+
+    // generate a random object
+    static Random rand = new Random();
 
     /**
      * a zero constants of point (0, 0, 0)
@@ -80,6 +93,35 @@ public class Point3D {
         return (other._x._coord - _x._coord) * (other._x._coord - _x._coord) +
                 (other._y._coord - _y._coord) * (other._y._coord - _y._coord) +
                 (other._z._coord - _z._coord) * (other._z._coord - _z._coord);
+    }
+
+    /**
+     * create random point around this point in circles
+     * @param numOfPoints number of points to create
+     * @param radius the radius of the circle that we create the point on him
+     * @return list of random point around this point
+     */
+    public List<Point3D> createRandomPointsAround(int numOfPoints, double radius){
+        List<Point3D> randomPointsList = new LinkedList<>();
+        randomPointsList.add(this); // add the center point
+
+        for(int k = 1; k < numOfPoints; k++) {
+            // random radius
+            double r = Math.sqrt(rand.nextDouble()) * radius;
+            // random angle
+            double theta = rand.nextDouble() * Math.PI * 2;
+            // (x, y) = (xCenter + r*cos(theta), yCenter + r*sin(theta)
+            double x = alignZero(_x._coord + r * Math.cos(theta));
+            double y = alignZero(_y._coord + r * Math.sin(theta));
+
+            Point3D randomPoint = new Point3D(x, y, _z._coord);
+            // check if the point is already wes created
+            if (!randomPointsList.contains(randomPoint)) {
+                randomPointsList.add(randomPoint);
+            }
+        }
+
+        return randomPointsList;
     }
 
     @Override

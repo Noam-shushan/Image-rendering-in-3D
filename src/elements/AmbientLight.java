@@ -10,8 +10,8 @@ public class AmbientLight extends Light{
 
     /**
      * Constructor for AmbientLight
-     * @param Ia Ia is the presentation of the intensity of the light in the pong formula
-     * @param Ka Ka is the presentation of the discount factor of the light in the pong formula
+     * @param Ia Ia is the presentation of the intensity of the light in the pong model
+     * @param Ka Ka is the presentation of the reduce factor of the light in the pong model
      */
     public AmbientLight(Color Ia, double Ka) {
         super(Ia.scale(Ka));

@@ -6,41 +6,44 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * A class that represents all kinds of geometries
+ * A class that represents all kinds of geometries <br/>
  * that have in common that they implement the interface
- * of finding points of intersection with a ray.
+ * of finding points of intersection with a ray. <br/>
  * using the composite design pattern.
- *
  * @author Noam Shushan
  */
 public class Geometries implements Intersectable {
-    private List<Intersectable> _interfaces;
+
+    /**
+     * all kind of geometries that implements the Intersectable interface
+     */
+    private List<Intersectable> _intersectables;
 
     /**
      * Default constructor for Geometries
      */
     public Geometries() {
         // use LinkedList because the use of this list is only for iterate
-        // from the start of the list to the end and adding new items to her
-        _interfaces = new LinkedList();
+        // from the start of the list to the end, and adding new items to her
+        _intersectables = new LinkedList();
     }
 
     /**
      * Constructor for Geometries
-     * @param interfaces one or more interfaces to add to the geometries list
+     * @param intersectables one or more interfaces to add to the geometries list
      */
-    public Geometries(Intersectable... interfaces) {
+    public Geometries(Intersectable... intersectables) {
         this();
-        add(interfaces);
+        add(intersectables);
     }
 
     /**
      * Add interfaces to the list of the geometries
-     * @param interfaces one or more interfaces to add to the geometries list
+     * @param intersectables one or more interfaces to add to the geometries list
      */
-    public void add(Intersectable... interfaces){
-        for(var item : interfaces){
-            _interfaces.add(item);
+    public void add(Intersectable... intersectables){
+        for(var item : intersectables){
+            _intersectables.add(item);
         }
     }
 
@@ -53,7 +56,7 @@ public class Geometries implements Intersectable {
     @Override
     public List<GeoPoint> findGeoIntersections(Ray ray) {
         List<GeoPoint> result = null;
-        for(var item : _interfaces){
+        for(var item : _intersectables){
             List<GeoPoint>  itemPoints = item.findGeoIntersections(ray);
             if(itemPoints != null){
                 if(result == null){

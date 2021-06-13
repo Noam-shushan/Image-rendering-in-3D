@@ -2,6 +2,7 @@ package geometries;
 
 import primitives.*;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import static primitives.Util.alignZero;
@@ -12,13 +13,22 @@ import static primitives.Util.alignZero;
  * @author Noam Shushan
  */
 public class Cylinder extends Tube{
+
     /**
      * the height of the Cylinder
      * most be greater then zero
      */
     final double _height;
-    private final Plane _base1; // the first base
-    private final Plane _base2; // the second base
+
+    /**
+     * the lower base
+     */
+    private final Plane _base1;
+
+    /**
+     * the upper base
+     */
+    private final Plane _base2;
 
     /**
      * Constructor of the Cylinder
@@ -77,112 +87,65 @@ public class Cylinder extends Tube{
      */
     @Override
     public List<GeoPoint> findGeoIntersections(Ray ray){
-        Vector vAxis = _axisRay.getDir();
-        Vector v = ray.getDir();
-        Point3D p0 = ray.getP0();
-        Point3D pC = _axisRay.getP0();
-        Point3D p1 = Point3D.ZERO;
-        Point3D p2 = Point3D.ZERO;
-
-        try { // NOT WORK
-            // intersections of the ray with infinite cylinder {without the bases)
-            var intersections = super.findGeoIntersections(ray);
-            double vAxisV = alignZero(vAxis.dotProduct(v)); // cos(angle between ray directions)
-
-            if (intersections == null) { // no intersections with the infinite cylinder
-                try {
-                    vAxis.crossProduct(v); // if ray and axis are parallel - throw exception
-                    return null; // they are not parallel - the ray is outside the cylinder
-                } catch (Exception e) {}
-
-                // The rays are parallel
-                Vector vP0PC;
-                try {
-                    vP0PC = pC.subtract(p0); // vector from P0 to Pc (O1)
-                } catch (Exception e) { // the rays start at the same point
-                    // check whether the ray goes into the cylinder
-                    return vAxisV > 0 ? //
-                            List.of(new GeoPoint(this, ray.getPoint(_height))) : null;
-                }
-
-                double t1 = alignZero(vP0PC.dotProduct(v)); // project Pc (O1) on the ray
-                p1 = ray.getPoint(t1); // intersection point with base1
-
-                // Check the distance between the rays
-                if (alignZero(p1.distance(pC) - _radius) >= 0){
-                    return null;
-                }
-
-                // intersection points with base2
-                double t2 = alignZero(vAxisV > 0 ? t1 + _height : t1 - _height);
-                p2 = ray.getPoint(t2);
-                // the ray goes through the bases - test bases vs. ray head and return points
-                // accordingly
-                if (t1 > 0 && t2 > 0){
-                    return List.of(new GeoPoint(this, p1), new GeoPoint(this, p2));
-                }
-
-                if (t1 > 0){
-                    return List.of(new GeoPoint(this, p1));
-                }
-                if (t2 > 0){
-                    return List.of(new GeoPoint(this, p2));
-                }
-                return null;
+        GeoPoint p1 = null;
+        GeoPoint p2 = null;
+        Point3D o1 = _base1._q0;
+        var ints = _base1.findGeoIntersections(ray);
+        if (ints != null) {
+            GeoPoint p = ints.get(0);
+            if (alignZero(o1.distance(p.point) - _radius) <= 0){
+                p1 = p;
             }
-
-            // Ray - infinite cylinder intersection points
-            if(intersections.size() >= 2){
-                p1 = intersections.get(0).point;
-                p2 = intersections.get(1).point;
-            }
-
-
-            // get projection of the points on the axis vs. base1 and update the
-            // points if both under base1 or they are from different sides of base1
-            double p1OnAxis = alignZero(p1.subtract(pC).dotProduct(vAxis));
-            double p2OnAxis = alignZero(p2.subtract(pC).dotProduct(vAxis));
-            var pTemp = _base1.findIntersections(ray);
-            if(pTemp != null){
-                if (p1OnAxis < 0 && p2OnAxis < 0){
-                    p1 = null;
-                }
-                else if (p1OnAxis < 0){
-                    p1 = _base1.findIntersections(ray).get(0);
-                }
-                else{
-                    /* p2OnAxis < 0 */
-                    p2 = _base1.findIntersections(ray).get(0);
-                }
-
-            }
-
-            // get projection of the points on the axis vs. base2 and update the
-            // points if both above base2 or they are from different sides of base2
-            double p1OnAxisMinusH = alignZero(p1OnAxis - _height);
-            double p2OnAxisMinusH = alignZero(p2OnAxis - _height);
-            if (p1OnAxisMinusH > 0 && p2OnAxisMinusH > 0)
-                p1 = null;
-            else if (p1OnAxisMinusH > 0)
-                p1 = _base2.findIntersections(ray).get(0);
-            else
-                /* p2OnAxisMinusH > 0 */ p2 = _base2.findIntersections(ray).get(0);
-
-            // Check the points and return list of points accordingly
-            if (p1 != null && p2 != null){
-                return List.of(new GeoPoint(this, p1), new GeoPoint(this, p2));
-            }
-            if (p1 != null){
-                return List.of(new GeoPoint(this, p1));
-            }
-            if (p2 != null){
-                return List.of(new GeoPoint(this, p2));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
 
-        return null;
+        Point3D o2 = _base2._q0;
+        ints = _base2.findGeoIntersections(ray);
+        if (ints != null) {
+            GeoPoint p = ints.get(0);
+            if (alignZero(o2.distance(p.point) - _radius) <= 0){
+                p2 = p;
+            }
+        }
+
+        if (p1 != null && p2 != null){
+            return List.of(p1, p2);
+        }
+
+        List<GeoPoint> pointIntersectTube = super.findGeoIntersections(ray);
+        if (pointIntersectTube == null) {
+            if (p1 != null){
+                return List.of(p1);
+            }
+            if (p2 != null){
+                return List.of(p2);
+            }
+
+            return null;
+        }
+
+        Vector v = _axisRay.getDir();
+
+        if (p1 == null && p2 == null) {
+            // bases are not intersected
+            // therefore all tube intersections - either all inside or all outside
+            for (GeoPoint p : pointIntersectTube) {
+                double distanceFromLowBase = alignZero(p.point.subtract(o1).dotProduct(v));
+                if (distanceFromLowBase <= 0 || alignZero(distanceFromLowBase - _height) >= 0)
+                    return null;
+            }
+            return pointIntersectTube;
+        }
+
+        // if we are here - one base is intersected
+        List<GeoPoint> resultList = new LinkedList<>(List.of(p1 == null ? p2 : p1));
+        for (GeoPoint p : pointIntersectTube) {
+            double distanceFromLowBase = alignZero(p.point.subtract(o1).dotProduct(v));
+            if (distanceFromLowBase > 0 && alignZero(distanceFromLowBase - _height) < 0){
+                resultList.add(p);
+            }
+        }
+
+        return resultList;
     }
 
     @Override

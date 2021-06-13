@@ -3,8 +3,8 @@ package elements;
 import primitives.*;
 
 /**
- * this class represent a point light like normal lamp.
- * with point that represent the position of the lamp and
+ * this class represent a point light like normal lamp. <br/>
+ * with point that represent the position of the lamp and <br/>
  * the intensity of the light that depends on some variables related to the pong model
  * @author Noam Shushan
  */
@@ -51,7 +51,7 @@ public class PointLight extends Light implements LightSource {
             return getIntensity();
         }
 
-        double factor = (_kC + dist * _kL + (dist*dist) * _kQ);
+        double factor = (_kC + dist * _kL + (dist * dist) * _kQ);
 
         return getIntensity().reduce(factor);
     }

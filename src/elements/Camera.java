@@ -1,43 +1,60 @@
 package elements;
 import primitives.*;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 
 import static primitives.Util.*;
 
 /**
- * this class represent camera with location and view plane
+ * this class represent camera by location <br/>
+ * and directions toward, right and up to the scene that lives in a virtual view plane. <br/>
+ * The view plane is represent by height and wight
  * @author Noam Shushan
  */
 public class Camera {
+
     /**
      * the location of the camera
      */
     private Point3D _p0;
+
     /**
      * the the normal in the right direction
      */
-    private Vector _vRight;
+    private final Vector _vRight;
+
     /**
-     * the the normal in the up direction
+     * the normal in the up direction
      */
-    private Vector _vUp;
+    private final Vector _vUp;
+
     /**
      * the the normal in the toward the scene
      */
     private Vector _vTo;
+
     /**
      * the distance from the camera to the view plane
      */
     private double _distance;
+
     /**
      * the width of the view plane
      */
     private double _width;
+
     /**
      * the height of the view plane
      */
     private double _height;
+
+    /**
+     * the point on the center of the view plane
+     */
+    private Point3D _centerPoint;
 
     /**
      * constructor for camera
@@ -50,6 +67,7 @@ public class Camera {
         if(!isZero(vUp.dotProduct(vTo))){
             throw new IllegalArgumentException("The vectors 'up' and and 'to' is not orthogonal");
         }
+
         _p0 = p0;
         _vUp = vUp.normalized();
         _vTo = vTo.normalized();
@@ -59,36 +77,77 @@ public class Camera {
     /**
      * construct ray through a pixel in the view plane
      * nX and nY create the resolution
-     * @param nX number of pixels to x axis
-     * @param nY number of pixels to y axis
+     * @param nX number of pixels in the width of the view plane
+     * @param nY number of pixels in the height of the view plane
      * @param j index row in the view plane
      * @param i index column in the view plane
-     * @return ray that goes through the pixel (j,i)  Ray(p0, Vi,j)
+     * @return ray that goes through the pixel (j, i)  Ray(p0, Vi,j)
      */
     public Ray constructRayThroughPixel(int nX, int nY, int j, int i){
-        Point3D Pc = _p0.add(_vTo.scale(_distance));
-        Point3D pIJ = Pc;
+        Point3D pIJ = getCenterOfPixel(nX, nY, j, i); // center point of the pixel
 
-        // 𝑅𝑦 = ℎ/𝑁𝑦
-        double rY = alignZero(_height / nY);
-        // 𝑅𝑥 = 𝑤/𝑁x
-        double rX = alignZero(_width / nX);
-
-        // 𝑥𝑗 = (𝑗 – (𝑁𝑥 − 1)/2) ∙ 𝑅x
-        double xJ = alignZero((j - ((nX - 1) / 2d)) * rX);
-        // 𝑦𝑖 = −(𝑖 – (𝑁𝑦 − 1)/2) ∙ 𝑅𝑦
-        double yI = alignZero(- (i - ((nY - 1) / 2d)) * rY);
-
-        if (xJ != 0) {
-            pIJ = pIJ.add(_vRight.scale(xJ));
-        }
-        if (yI != 0) {
-            pIJ = pIJ.add(_vUp.scale(yI));
-        }
-
-        //𝒗𝒊,𝒋 = 𝑷𝒊,𝒋 − 𝑷𝟎
+        //Vi,j = Pi,j - P0, the direction of the ray to the pixel(j, i)
         Vector vIJ = pIJ.subtract(_p0);
         return new Ray(_p0, vIJ);
+    }
+
+    /**
+     * construct bean of rays through a pixel in the view plane
+     * nX and nY create the resolution
+     * @param nX number of pixels in the width of the view plane
+     * @param nY number of pixels in the height of the view plane
+     * @param j index row in the view plane
+     * @param i index column in the view plane
+     * @param numOfRays the number of rays to construct
+     * @return list of rays that start in the position of the camera and gos to the pixel
+     */
+    public List<Ray> constructBeanOfRaysThroughPixel(int nX, int nY, int j, int i, int numOfRays){
+        if(numOfRays == 1){
+            Ray ray = constructRayThroughPixel(nX, nY, j, i);
+            return List.of(ray);
+        }
+        List<Ray> bean = new LinkedList<>();
+
+        Point3D pC = getCenterOfPixel(nX, nY, j, i);
+        // create the bean from the random point around the center point of the pixel
+        List<Point3D> randomPointsList = pC.createRandomPointsAround(numOfRays, 0.5d);
+
+        for(var p : randomPointsList){
+            Vector dir = p.subtract(_p0);
+            bean.add(new Ray(_p0, dir));
+        }
+        return bean;
+    }
+
+    /**
+     * get the center point of the pixel in the view plane
+     * @param nX number of pixels in the width of the view plane
+     * @param nY number of pixels in the height of the view plane
+     * @param j index row in the view plane
+     * @param i index column in the view plane
+     * @return the center point of the pixel
+     */
+    private Point3D getCenterOfPixel(int nX, int nY, int j, int i){
+        // calculate the ratio of the pixel by the height and by the width of the view plane
+        // the ratio Ry = h/Ny, the height of the pixel
+        double rY = alignZero(_height / nY);
+        // the ratio Rx = w/Nx, the width of the pixel
+        double rX = alignZero(_width / nX);
+
+        // Xj = (j - (Nx -1)/2) * Rx
+        double xJ = alignZero((j - ((nX - 1d) / 2d)) * rX);
+        // Yi = -(i - (Ny - 1)/2) * Ry
+        double yI = alignZero(- (i - ((nY - 1d) / 2d)) * rY);
+
+        Point3D pIJ = _centerPoint;
+
+        if (xJ != 0d) {
+            pIJ = pIJ.add(_vRight.scale(xJ));
+        }
+        if (yI != 0d) {
+            pIJ = pIJ.add(_vUp.scale(yI));
+        }
+        return pIJ;
     }
 
     /**
@@ -112,8 +171,9 @@ public class Camera {
     }
 
     /**
-     * Rotate the camera by rotating the vectors of the camera directions
-     * @param theta angle θ according to the right hand rule in degrees
+     * Rotate the camera by rotating the vectors of the camera directions <br/>
+     * According the Rodrigues' rotation formula
+     * @param theta angle theta according to the right hand rule in degrees
      * @return this camera after the rotating
      */
     public Camera rotateCamera(double theta) {
@@ -121,19 +181,19 @@ public class Camera {
     }
 
     /**
-     * Rotate the camera by rotating the vectors of the camera directions
-     * according the Rodrigues' rotation formula
-     * @param θ angle θ according to the right hand rule in degrees
+     * Rotate the camera by rotating the vectors of the camera directions <br/>
+     * According the Rodrigues' rotation formula
+     * @param theta angle theta according to the right hand rule in degrees
      * @param k axis vector for the rotation
      * @return this camera after the rotating
      */
-    private Camera rotateCamera(double θ, Vector k) {
-        double radianAngle = Math.toRadians(θ);
-        double cosθ = alignZero(Math.cos(radianAngle));
-        double sinθ = alignZero(Math.sin(radianAngle));
+    private Camera rotateCamera(double theta, Vector k) {
+        double radianAngle = Math.toRadians(theta);
+        double cosTheta = alignZero(Math.cos(radianAngle));
+        double sinTheta = alignZero(Math.sin(radianAngle));
 
-        _vRight.rotateVector(k, cosθ, sinθ);
-        _vUp.rotateVector(k, cosθ, sinθ);
+        _vRight.rotateVector(k, cosTheta, sinTheta);
+        _vUp.rotateVector(k, cosTheta, sinTheta);
 
         return this;
     }
@@ -167,61 +227,10 @@ public class Camera {
         }
 
         _distance = distance;
+        // every time that we chang the distance from the view plane
+        // we will calculate the center point of the view plane aging
+        _centerPoint = _p0.add(_vTo.scale(_distance));
         return this;
-    }
-
-    /**
-     * get the location of the camera
-     * @return the location of the camera
-     */
-    public Point3D getP0() {
-        return _p0;
-    }
-
-    /**
-     * get the vector direction to the right
-     * @return the vector direction to the right
-     */
-    public Vector get_vRight() {
-        return _vRight;
-    }
-    /**
-     * get the vector direction to up
-     * @return the vector direction to up
-     */
-    public Vector get_vUp() {
-        return _vUp;
-    }
-    /**
-     * get the vector direction to the view plane
-     * @return the vector direction to the view plane
-     */
-    public Vector get_vTo() {
-        return _vTo;
-    }
-
-    /**
-     * get the distance from the camera to the view plane
-     * @return the distance from the camera to the view plane
-     */
-    public double getDistance() {
-        return _distance;
-    }
-
-    /**
-     * get the width of the view plane
-     * @return the width of the view plane
-     */
-    public double getWidth() {
-        return _width;
-    }
-
-    /**
-     * get the height of the view plane
-     * @return the height of the view plane
-     */
-    public double getHeight() {
-        return _height;
     }
 
     @Override

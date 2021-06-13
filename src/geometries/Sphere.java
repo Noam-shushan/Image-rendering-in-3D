@@ -15,6 +15,7 @@ public class Sphere extends Geometry {
      * the center of the sphere
      */
     final Point3D _center;
+
     /**
      * the radius of the sphere
      * most be greater then zero
@@ -46,7 +47,7 @@ public class Sphere extends Geometry {
 
     /**
      * the normal of sphere:
-     * n = normalize(P - O)
+     * n = normalize(p - centerPoint)
      * @param p the point on the sphere we want the normal from
      * @return normal vector
      */
@@ -58,14 +59,14 @@ public class Sphere extends Geometry {
 
     /**
      * find intersections point with the sphere
-     * let O be the center of the sphere, let r be the radius
-     * u = O − p0
-     * tm = v ∙ u
-     * d = sqrt ( |u|^2 - tm^2 )
-     * th = sqrt ( r^2 - d^2 )
-     * if (d ≥ r) there are no intersections
-     * t1,2 = tm ± th, p1,2 = p0 + t1,2∙v
-     * t1,2∙v => take only if t > 0
+     * let O be the center of the sphere, let r be the radius <br/>
+     * u = O − p0 <br/>
+     * tm = v * u <br/>
+     * d = sqrt ( |u|^2 - tm^2 ) <br/>
+     * th = sqrt ( r^2 - d^2 ) <br/>
+     * if (d >= r) there are no intersections <br/>
+     * t1,2 = tm +- th, p1,2 = p0 + t1,2*v <br/>
+     * t1,2*v => take only if t > 0 <br/>
      * @param ray ray that cross the sphere
      * @return list of intersection points that were found
      * @throws IllegalArgumentException if the starting point of the ray equals to the center of the sphere

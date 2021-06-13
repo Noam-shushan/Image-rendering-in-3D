@@ -8,10 +8,12 @@ import primitives.*;
  * @author Noam Shushan
  */
 public class SpotLight extends PointLight{
+
     /**
      * the direction of the light
      */
     private Vector _direction;
+
     /**
      * focus the light to get a beam of light that is bounded like a flashlight
      */

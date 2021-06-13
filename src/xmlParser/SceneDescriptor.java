@@ -15,8 +15,15 @@ import java.util.List;
  * @author Noam Shushan
  */
 public class SceneDescriptor {
-    
+
+    /**
+     * the root element of the XML file
+     */
     private Element _rootElement;
+
+    /**
+     * the final result of scene from the XML file
+     */
     private Scene _sceneResult;
 
     /**
@@ -34,7 +41,8 @@ public class SceneDescriptor {
         _sceneResult = new Scene.SceneBuilder(sceneName)
                 .setAmbientLight(ambientLight)
                 .setBackground(background)
-                .setGeometries(geometries).build();
+                .setGeometries(geometries)
+                .build();
     }
 
     /**
@@ -71,8 +79,8 @@ public class SceneDescriptor {
         return geometries;
     }
 
-    private Intersectable getGeometry(Element elementNode){
-        Intersectable result = null;
+    private Geometry getGeometry(Element elementNode){
+        Geometry result = null;
         switch (elementNode.getNodeName()){
             case "sphere" :
                 var pc = getPoint(elementNode.getAttribute("center"));

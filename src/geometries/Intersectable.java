@@ -18,6 +18,7 @@ public interface Intersectable {
      * at a certain point for the geometry
      */
     public static class GeoPoint{
+
         /**
          * the geometry that we find the color of a certain point
          */
@@ -27,9 +28,20 @@ public interface Intersectable {
          */
         public Point3D point;
 
+        /**
+         * the normal at the point on the geometry
+         */
+        public Vector normal;
+
+        /**
+         * constructor for the GeoPoint class
+         * @param geometry the geometry
+         * @param point the point that interact the geometry
+         */
         public GeoPoint(Geometry geometry, Point3D point) {
             this.geometry = geometry;
             this.point = point;
+            this.normal = this.geometry.getNormal(this.point);
         }
 
         @Override

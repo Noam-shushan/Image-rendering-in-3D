@@ -3,15 +3,17 @@ package geometries;
 import primitives.*;
 
 /**
- * abstract class for all the geometries shape
- * Provides a normal vector for the geometry, emission color and the material
+ * Abstract class for all the geometries shape. <br/>
+ * Provides a normal vector for the geometry at certain point, emission color and the material.
  * @author Noam Shushan
  */
 public abstract class Geometry implements Intersectable {
+
     /**
      * emission color of any geometry
      */
     private Color _emission = Color.BLACK;
+
     /**
      * the material of the geometry
      */

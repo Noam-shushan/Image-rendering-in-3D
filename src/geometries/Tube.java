@@ -39,11 +39,10 @@ public class Tube extends Geometry {
 
     /**
      * normal of Tube
-     * calculation of the normal:
-     * t = v*(p - p0)
-     * O = p0 + t*v
+     * calculation of the normal: <br/>
+     * t = v*(p - p0) <br/>
+     * O = p0 + t*v <br/>
      * N = normalize(p - O)
-     *
      * @param point the point to get the normal from
      * @return vector normal to to the tube from the point
      * @throws IllegalArgumentException if the point is equal to the O in the
@@ -67,8 +66,7 @@ public class Tube extends Geometry {
     }
 
     /**
-     * implemented by Dan zilberstein
-     *
+     * find intersections with tube
      * @param ray ray intersecting with the tube
      * @return intersection points
      */
@@ -86,9 +84,10 @@ public class Tube extends Geometry {
         double vVa = alignZero(v.dotProduct(vAxis));
         Vector vVaVa;
         Vector vMinusVVaVa;
-        if (vVa == 0) // the ray is orthogonal to the axis
+        if (isZero(vVa)) {
+            // the ray is orthogonal to the axis
             vMinusVVaVa = v;
-        else {
+        } else {
             vVaVa = vAxis.scale(vVa);
             try {
                 vMinusVVaVa = v.subtract(vVaVa);
@@ -99,57 +98,63 @@ public class Tube extends Geometry {
         // A = (v-(v*va)*va)^2
         a = vMinusVVaVa.lengthSquared();
 
+        double squareRadius = _radius * _radius;
+
         Vector deltaP = null;
         try {
             deltaP = p0.subtract(_axisRay.getP0());
         } catch (IllegalArgumentException e1) { // the ray begins at axis P0
-            if (vVa == 0) // the ray is orthogonal to Axis
+            if (isZero(vVa)){
+                // the ray is orthogonal to Axis
                 return List.of(new GeoPoint(this, ray.getPoint(_radius)));
-
-            double t = alignZero(Math.sqrt(_radius * _radius / vMinusVVaVa.lengthSquared()));
-            return t == 0 ? null : List.of(new GeoPoint(this, ray.getPoint(t)));
+            }
+            return List.of(new GeoPoint(this, ray.getPoint(Math.sqrt(squareRadius / vMinusVVaVa.lengthSquared()))));
         }
 
         double dPVAxis = alignZero(deltaP.dotProduct(vAxis));
         Vector dPVaVa;
         Vector dPMinusdPVaVa;
-        if (dPVAxis == 0)
+        if (isZero(dPVAxis)){
             dPMinusdPVaVa = deltaP;
-        else {
+        } else {
             dPVaVa = vAxis.scale(dPVAxis);
             try {
                 dPMinusdPVaVa = deltaP.subtract(dPVaVa);
             } catch (IllegalArgumentException e1) {
-                double t = alignZero(Math.sqrt(_radius * _radius / a));
-                return t == 0 ? null : List.of(new GeoPoint(this, ray.getPoint(t)));
+                return List.of(new GeoPoint(this,ray.getPoint(Math.sqrt(squareRadius / a))));
             }
         }
 
         // B = 2(v - (v*va)*va) * (dp - (dp*va)*va))
         b = 2 * alignZero(vMinusVVaVa.dotProduct(dPMinusdPVaVa));
-        c = dPMinusdPVaVa.lengthSquared() - _radius * _radius;
+        c = dPMinusdPVaVa.lengthSquared() - squareRadius;
 
         // A*t^2 + B*t + C = 0 - lets resolve it
         double discr = alignZero(b * b - 4 * a * c);
-        if (discr <= 0) return null; // the ray is outside or tangent to the tube
+        if (discr <= 0){
+            return null; // the ray is outside or tangent to the tube
+        }
 
         double doubleA = 2 * a;
         double tm = alignZero(-b / doubleA);
         double th = Math.sqrt(discr) / doubleA;
-        if (isZero(th)) return null; // the ray is tangent to the tube
+        if (isZero(th)){
+            return null; // the ray is tangent to the tube
+        }
 
-        double t1 = alignZero(tm + th);
-        if (t1 <= 0) // t1 is behind the head
-            return null; // since th must be positive (sqrt), t2 must be non-positive as t1
+        double t1 = alignZero(tm - th);
+        double t2 = alignZero(tm + th); // always: t2 > t1
+        if (t2 <= 0){
+            return null;
+        }
 
-        double t2 = alignZero(tm - th);
-
-        // if both t1 and t2 are positive
-        if (t2 > 0)
-            return List.of(
-                    new GeoPoint(this, ray.getPoint(t1)),
-                    new GeoPoint(this, ray.getPoint(t2)));
-        else // t2 is behind the head
-            return List.of(new GeoPoint(this, ray.getPoint(t1)));
+        try {
+            return t1 > 0 ? List.of(new GeoPoint(this, ray.getPoint(t1)),
+                    new GeoPoint(this, ray.getPoint(t2)))
+                    : List.of(new GeoPoint(this, ray.getPoint(t2)));
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

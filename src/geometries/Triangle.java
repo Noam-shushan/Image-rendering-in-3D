@@ -22,14 +22,14 @@ public class Triangle extends Polygon {
 
     /**
      * find intersections point with the triangle
-     * v1 = p1 - p0
-     * v2 = p2 - p0
-     * v3 = p3 - p0
-     * n1 = normalize(v1xv2)
-     * n2 = normalize(v2xv3)
-     * n3 = normalize(v3xv1)
+     * v1 = p1 - p0 <br/>
+     * v2 = p2 - p0 <br/>
+     * v3 = p3 - p0 <br/>
+     * n1 = normalize(v1xv2) <br/>
+     * n2 = normalize(v2xv3) <br/>
+     * n3 = normalize(v3xv1) <br/>
      * let v be the direction of the rey
-     * if v∙ni (1 <= i < 3) is have the sing (+/-)
+     * if v*ni (1 <= i < 3) is have the sing (+/-)
      * there is intersection points with the triangle
      * @param ray ray that cross the triangle
      * @return list of intersection points that were found

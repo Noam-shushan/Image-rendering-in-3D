@@ -160,21 +160,21 @@ public class Vector {
 
     /**
      * rotate the vectors by Rodrigues' rotation formula:
-     * vRot = V * cos(θ) + (K x V) * sin(θ) + K * (K∙V) * (1 - cos(θ))
+     * vRot = V * cos(theta) + (K x V) * sin(theta) + K * (K*V) * (1 - cos(theta))
      * V is this vector
      * @param k the axis vector of rotation
-     * @param cosθ cos(θ)
-     * @param sinθ sin(θ)
+     * @param cosTheta cos(theta)
+     * @param sinTheta sin(theta)
      */
-    public void rotateVector(Vector k,  double cosθ, double sinθ) {
+    public void rotateVector(Vector k,  double cosTheta, double sinTheta) {
         Vector vRot;
-        if (cosθ == 0) {
-            vRot = k.crossProduct(this).scale(sinθ);
+        if (cosTheta == 0d) {
+            vRot = k.crossProduct(this).scale(sinTheta);
         }
         else {
-            vRot = this.scale(cosθ);
-            if (sinθ != 0) {
-                vRot = vRot.add(k.crossProduct(this).scale(sinθ));
+            vRot = this.scale(cosTheta);
+            if (sinTheta != 0d) {
+                vRot = vRot.add(k.crossProduct(this).scale(sinTheta));
             }
         }
         _head = vRot.normalize()._head;
