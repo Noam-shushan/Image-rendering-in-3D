@@ -68,6 +68,19 @@ public class Box extends Geometry{
     }
 
     /**
+     * setter for the material of the geometry
+     * @param material the new material of the geometry
+     * @return this geometry
+     */
+    @Override
+    public Geometry setMaterial(Material material) {
+        for(var corner : _corners){
+            corner.setMaterial(material);
+        }
+        return this;
+    }
+
+    /**
      * get the normal that stand on point in some geometry
      *
      * @param point should be null for flat geometries
