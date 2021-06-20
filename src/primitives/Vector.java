@@ -1,5 +1,7 @@
 package primitives;
 
+import static primitives.Util.isZero;
+
 /**
  * this class represent a Vector of 3D
  * @author Noam shushan
@@ -128,6 +130,20 @@ public class Vector {
         return res.normalize();
     }
 
+    /**
+     * create vertical vector to this vector
+     * @return vertical vector to this vector
+     */
+    public Vector createVerticalVector(){
+        double y = _head.getY(),
+                z = _head.getZ();
+        if(y == 0 && z == 0){
+            return new Vector(0,1,0);
+        }
+        return new Vector(0, -z, y)
+                .normalize();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -173,10 +189,11 @@ public class Vector {
         }
         else {
             vRot = this.scale(cosTheta);
-            if (sinTheta != 0d) {
+            if (sinTheta != 0d && !isZero(k.dotProduct(this))) {
                 vRot = vRot.add(k.crossProduct(this).scale(sinTheta));
             }
         }
         _head = vRot.normalize()._head;
     }
+
 }

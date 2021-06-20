@@ -8,11 +8,6 @@ import scene.Scene;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.LinkedList;
-import java.util.List;
-
-import static primitives.Util.alignZero;
-
 public class MyImages {
 
     Scene scene = new Scene.SceneBuilder("Tennis table")
@@ -115,11 +110,42 @@ public class MyImages {
                 .setCamera(camera)
                 .setRayTracer(new RayTracerBasic(scene))
                 .setMultithreading(6)
-                .setNumOfRaysInBean(50)
+                .setAntiAliasing(50)
                 .setDebugPrint();
         render.renderImage();
         render.writeToImage();
 
+    }
+
+    @Test
+    void boxTest(){
+        Box box = new Box(
+                new Point3D(10, 10, 0),
+                new Point3D(0,10,0),
+                Point3D.ZERO,
+                new Point3D(10,0,0),
+                20d
+        );
+        Scene boxScene = new Scene.SceneBuilder("box")
+                .setGeometries(new Geometries(box
+                        .setEmission(Color.ORANGE)))
+                .setLights(new DirectionalLight(
+                        new Color(253, 255, 180) ,new Vector(0,0,-1)))
+                .build();
+        Camera camera = new Camera(
+                new Point3D(-10, 8,30),
+                Point3D.ZERO.subtract(new Point3D(-10, 8,30)),
+                Point3D.ZERO.subtract(new Point3D(-10, 8,30)).createVerticalVector())
+                .setDistance(50)
+                .setViewPlaneSize(200, 200)
+                ;
+        Render render =  new Render()
+                .setImageWriter(new ImageWriter("box test", 500, 500))
+                .setCamera(camera)
+                .setRayTracer(new RayTracerBasic(boxScene))
+                .setDebugPrint();
+        render.renderImage();
+        render.writeToImage();
     }
 
     @Test
@@ -172,14 +198,14 @@ public class MyImages {
         render.writeToImage();
     }
 
-    Scene SphereOnMirrorScene = new Scene.SceneBuilder("mirror")
+    Scene _sphereOnMirrorScene = new Scene.SceneBuilder("mirror")
             .setGeometries(
                     new Geometries(
-                            new Sphere(18, new Point3D(30, 5,32))
+                            new Sphere(20, new Point3D(40, 10,80))
                                     .setEmission(Color.RED)
                                     .setMaterial(new Material()
-                                            .setKd(0.3)
-                                            .setKr(0.6)
+                                            .setKd(0.6)
+                                            .setKr(0.2)
                                             .setKs(1)
                                             .setShininess(8)
                                     ),
@@ -190,11 +216,11 @@ public class MyImages {
                                     new Point3D(10, 60,10))
                                     .setEmission(new Color(152, 206, 180))
                                     .setMaterial(new Material()
-                                            .setKr(0.7)
-                                            .setKt(0.1)
+                                            .setKr(0.5)
+                                            .setKt(0)
                                             .setShininess(19)
-                                            .setKs(0.9)
-                                            .setKd(0.1)
+                                            .setKs(0.7)
+                                            .setKd(0.2)
                                     )
                     )
             )
@@ -222,13 +248,14 @@ public class MyImages {
         Render render = new Render()
                 .setImageWriter(new ImageWriter("sphere on mirror", 500, 500))
                 .setCamera(camera)
-                .setRayTracer(new RayTracerBasic(SphereOnMirrorScene)
+                .setRayTracer(new RayTracerBasic(_sphereOnMirrorScene)
                     .setGlossy()
                     .setDiffuse()
                     .setNumOfRaysInBean(50)
                         )
-                //.setNumOfRaysInBean(40)
+                //.setAntiAliasing(40)
                 .setMultithreading(3)
+                .setDebugPrint()
         ;
 
         render.renderImage();
@@ -249,12 +276,14 @@ public class MyImages {
                 .setCamera(camera
                         //.moveCamera(new Point3D(-25, -40, 50), new Point3D(1, 0,0))
                 )
-                .setRayTracer(new RayTracerBasic(SphereOnMirrorScene)
-                        //.setGlossy()
-                        //.setDiffuse()
+                .setRayTracer(new RayTracerBasic(_sphereOnMirrorScene)
+//                        .setGlossy()
+//                        .setDiffuse()
+//                        .setNumOfRaysInBean(60)
                 )
-                //.setNumOfRaysInBean(40)
+                //.setAntiAliasing(10)
                 .setMultithreading(3)
+                .setDebugPrint()
                 ;
 
         render.renderImage();
@@ -270,36 +299,35 @@ public class MyImages {
         Scene scene = new Scene.SceneBuilder("mirror")
                 .setGeometries(
                         new Geometries(
-                                new Sphere(10, new Point3D(5, 5,40))
+                                new Sphere(15, new Point3D(5, 20,40))
                                         .setEmission(Color.RED)
                                         .setMaterial(new Material()
-                                                .setKd(0.3)
-                                                .setKr(0.6)
+                                                .setKd(0.7)
+                                                .setKr(0.2)
                                                 .setKs(1)
                                                 .setShininess(8)
                                         ),
                                 new Polygon(
-                                        new Point3D(70, 80, 0),
-                                        new Point3D(30, -80, 0),
-                                        new Point3D(30, -80, 80),
-                                        new Point3D(70, 80,80))
+                                        new Point3D(80, 80, -50),
+                                        new Point3D(40, -80, -50),
+                                        new Point3D(40, -80, 80),
+                                        new Point3D(80, 80,80))
                                         .setEmission(new Color(152, 206, 180))
                                         .setMaterial(new Material()
-                                                .setKr(0.7)
-                                                //.setKt(0.1)
-                                                .setShininess(30)
-                                                .setKs(1)
-                                                .setKd(0.2)
+                                                .setKr(0.6)
+                                                .setKt(0)
+                                                .setShininess(20)
+                                                .setKs(0.8)
+                                                .setKd(0.3)
                                         )
                         )
                 )
                 .setLights(
-                        new SpotLight(new Color(253, 255, 180),
-                                new Point3D(-50,100, -10),
-                                new Vector(70, -100,40))
-                                .setFocus(20)
-                                .setKl(0.0005)
-                                .setKq(0.000005)
+                        new PointLight(new Color(253, 255, 180),
+                                new Point3D(100,100, -10))
+                                .setKl(0.007)
+                                .setKq(0.00001)
+
 
 
                 )
@@ -307,20 +335,93 @@ public class MyImages {
 
 
         Render render = new Render()
-                .setImageWriter(new ImageWriter("sphere  and cyl on mirror no glossy", 500, 500))
+                .setImageWriter(new ImageWriter("sphere on stand mirror", 500, 500))
                 .setCamera(camera
-                        //.moveCamera(new Point3D(-25, -40, 50), new Point3D(1, 0,0))
                 )
                 .setRayTracer(new RayTracerBasic(scene)
                         .setGlossy()
                         .setDiffuse()
                         .setNumOfRaysInBean(50)
                 )
-                .setNumOfRaysInBean(40)
+                //.setAntiAliasing(50)
                 .setMultithreading(3)
+                .setDebugPrint()
                 ;
 
         render.renderImage();
         render.writeToImage();
+    }
+
+    @Test
+    void mirrorTest3(){
+        Camera camera = new Camera(new Point3D(-25, 0,45),
+                new Vector(1,0,0), new Vector(0,0,1))
+                .setViewPlaneSize(200, 200)
+                .setDistance(50);
+        Scene scene = new Scene.SceneBuilder("mirror")
+                .setGeometries(
+                        new Geometries(
+                                new Sphere(15, new Point3D(5, 20,40))
+                                        .setEmission(Color.RED)
+                                        .setMaterial(new Material()
+                                                .setKd(0.7)
+                                                .setKr(0.2)
+                                                .setKs(1)
+                                                .setShininess(8)
+                                        ),
+                                new Polygon(
+                                        new Point3D(80, 80, -50),
+                                        new Point3D(40, -80, -50),
+                                        new Point3D(40, -80, 80),
+                                        new Point3D(80, 80,80))
+                                        .setEmission(new Color(152, 206, 180))
+                                        .setMaterial(new Material()
+                                                .setKr(0.6)
+                                                .setKt(0)
+                                                .setShininess(20)
+                                                .setKs(0.8)
+                                                .setKd(0.3)
+                                        )
+                        )
+                )
+                .setLights(
+                        new PointLight(new Color(253, 255, 180),
+                                new Point3D(100,100, -10))
+                                .setKl(0.007)
+                                .setKq(0.00001)
+
+
+
+                )
+                .build();
+
+
+        Render render = new Render()
+                .setImageWriter(new ImageWriter("sphere on stand mirror no imp", 500, 500))
+                .setCamera(camera
+                )
+                .setRayTracer(new RayTracerBasic(scene)
+                )
+                .setAntiAliasing(100)
+                .setMultithreading(3)
+                .setDebugPrint()
+                ;
+
+        render.renderImage();
+        render.writeToImage();
+    }
+
+    @Test
+    void f(){
+        var list = new Point3D(1,2,3).createRandomPointsAround(3, 0.5);
+        Plane p = new Plane(list.get(0), list.get(1), list.get(2));
+        System.out.println(p);
+    }
+
+    @Test
+    void tt() {
+        Vector v1 = new Vector(0, 0, 1);
+        Vector v2 = new Vector(1, 0, -1);
+        System.out.println(v2.dotProduct(v1));
     }
 }

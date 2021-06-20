@@ -1,10 +1,7 @@
 package elements;
 import primitives.*;
 
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
-import java.util.Random;
 
 import static primitives.Util.*;
 
@@ -57,6 +54,14 @@ public class Camera {
     private Point3D _centerPoint;
 
     /**
+     *  the radius of the random point to create around <br/>
+     *  the center point of the pixel in the view plane <br/>
+     *  to calculate the average color of point on some geometry <br/>
+     *  as part of anti aliasing improvement
+     */
+    private static final double BEAN_RADIUS_FOR_ANTI_ALIASING = 0.45d;
+
+    /**
      * constructor for camera
      * @param p0 the location of the camera
      * @param vTo the direction to the view plane
@@ -102,21 +107,12 @@ public class Camera {
      * @return list of rays that start in the position of the camera and gos to the pixel
      */
     public List<Ray> constructBeanOfRaysThroughPixel(int nX, int nY, int j, int i, int numOfRays){
-        if(numOfRays == 1){
-            Ray ray = constructRayThroughPixel(nX, nY, j, i);
-            return List.of(ray);
-        }
-        List<Ray> bean = new LinkedList<>();
+        Point3D pIJ = getCenterOfPixel(nX, nY, j, i); // center point of the pixel
+        Vector vIJ = pIJ.subtract(_p0); // the direction of the ray through the pixel
+        Ray ray = new Ray(_p0, vIJ);
 
-        Point3D pC = getCenterOfPixel(nX, nY, j, i);
         // create the bean from the random point around the center point of the pixel
-        List<Point3D> randomPointsList = pC.createRandomPointsAround(numOfRays, 0.5d);
-
-        for(var p : randomPointsList){
-            Vector dir = p.subtract(_p0);
-            bean.add(new Ray(_p0, dir));
-        }
-        return bean;
+        return ray.createBean(pIJ, numOfRays, BEAN_RADIUS_FOR_ANTI_ALIASING);
     }
 
     /**

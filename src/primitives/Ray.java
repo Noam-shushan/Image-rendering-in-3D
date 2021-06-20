@@ -3,7 +3,9 @@ package primitives;
 
 import static geometries.Intersectable.GeoPoint;
 
+import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Predicate;
 
 /**
  * this class represent a ray by starting point and direction
@@ -92,6 +94,60 @@ public class Ray {
         }
 
         return closesGeoPoint;
+    }
+
+    /**
+     * construct bean of rays from the starting of the ray in the random direction around the target point
+     * @param targetPoint the target point to create rays around her
+     * @param numOfRays number of rays to create
+     * @param radius the radius of random points around the target point
+     * @return bean of rays
+     */
+     public  List<Ray> createBean(Point3D targetPoint, int numOfRays, double radius) {
+         // random points around the point on the ray
+         var randomPoints = targetPoint.createRandomPointsAround(numOfRays, radius);
+
+        List<Ray> bean = new LinkedList<>();
+        for(var p : randomPoints){
+            Vector dir = p.subtract(_p0).normalized();
+            bean.add(new Ray(_p0, dir));
+        }
+        return bean;
+    }
+
+    /**
+     * construct bean of rays from the starting point and around the direction
+     * randomly by the opening angle of the bean
+     * @param numOfRays number of rays to create
+     * @param angle the opening angle of the bean
+     * @param predicate predicate on the directions of the rays in the bean
+     * @return bean of rays that start in this ray and goes in random directions by the angle
+     */
+    public List<Ray> createBeanForGlossy(int numOfRays, double angle, Predicate<Vector> predicate) {
+        // We set the distance between the geometry and the glossy object
+        // as constants 1 to get simple calculation of the opening angle of the bean
+        // that way we create random point around some point the is
+        // distance from the stating point of the ray is 1
+        var pointOnTheRay = _p0.add(_dir);
+
+        // first normal to the ray
+        var vX = _dir.createVerticalVector();
+        // second normal to the ray
+        var vY = _dir.crossProduct(vX)
+                .normalized();
+
+        // random points around the point on the ray
+        var randomPoints = pointOnTheRay.createRandomPointsAround(numOfRays, angle,
+                vX, vY);
+        List<Ray> bean = new LinkedList<>();
+        for(var p : randomPoints){
+            Vector dir = p.subtract(_p0);
+             // some condition on the direction of the rays
+            if(predicate.test(dir)){
+                bean.add(new Ray(_p0, dir));
+            }
+        }
+        return bean;
     }
 
     @Override

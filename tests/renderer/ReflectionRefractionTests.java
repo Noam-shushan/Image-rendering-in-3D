@@ -58,7 +58,7 @@ public class ReflectionRefractionTests {
                 new Triangle(new Point3D(1500, -1500, -1500), new Point3D(-1500, 1500, -1500),
                         new Point3D(670, 670, 3000)) //
                         .setEmission(new Color(20, 20, 20)) //
-                        .setMaterial(new Material().setKr(1)),
+                        .setMaterial(new Material().setKr(0.8)),
                 new Triangle(new Point3D(1500, -1500, -1500), new Point3D(-1500, 1500, -1500),
                         new Point3D(-1500, -1500, -2000)) //
                         .setEmission(new Color(20, 20, 20)) //
@@ -73,8 +73,12 @@ public class ReflectionRefractionTests {
                 .setCamera(camera) //
                 .setRayTracer(new RayTracerBasic(scene)
                         .setGlossy()
-                        .setDiffuse())
-                .setMultithreading(3);
+                        .setDiffuse()
+                        .setNumOfRaysInBean(80)
+                        .setBeanRadiusForGlossy(5d)
+                        )
+                .setMultithreading(3)
+                .setDebugPrint();
 
         render.renderImage();
         render.writeToImage();

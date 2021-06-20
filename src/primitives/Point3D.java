@@ -4,8 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
-import static primitives.Util.alignZero;
-import static primitives.Util.random;
+import static primitives.Util.*;
 
 /**
  * this is a basic point for RayTracing project in 3D
@@ -96,9 +95,11 @@ public class Point3D {
     }
 
     /**
-     * create random point around this point in circles
+     * create random point around this point in circles.<br/>
+     * the points wile be in the same plane of z = this.z.
      * @param numOfPoints number of points to create
      * @param radius the radius of the circle that we create the point on him
+     * @see <a href="https://stackoverflow.com/questions/5837572/generate-a-random-point-within-a-circle-uniformly/50746409#50746409">The idea behind the algorithm</a>
      * @return list of random point around this point
      */
     public List<Point3D> createRandomPointsAround(int numOfPoints, double radius){
@@ -109,10 +110,12 @@ public class Point3D {
             // random radius
             double r = Math.sqrt(rand.nextDouble()) * radius;
             // random angle
-            double theta = rand.nextDouble() * Math.PI * 2;
+            double cosTheta = random(-1, 1);
+            // sin(theta) = sqrt(1 - cos(theta)^2)
+            double sinTheta = Math.sqrt(1 - cosTheta * cosTheta);
             // (x, y) = (xCenter + r*cos(theta), yCenter + r*sin(theta)
-            double x = alignZero(_x._coord + r * Math.cos(theta));
-            double y = alignZero(_y._coord + r * Math.sin(theta));
+            double x = alignZero(_x._coord + r * cosTheta);
+            double y = alignZero(_y._coord + r * sinTheta);
 
             Point3D randomPoint = new Point3D(x, y, _z._coord);
             // check if the point is already wes created
@@ -120,7 +123,29 @@ public class Point3D {
                 randomPointsList.add(randomPoint);
             }
         }
+        return randomPointsList;
+    }
 
+    public List<Point3D> createRandomPointsAround(int numOfPoints, double radius, Vector normal1, Vector normal2) {
+        List<Point3D> randomPointsList = new LinkedList<>();
+        var pc = new Point3D(this.getX(), this.getY(), this.getY());
+        randomPointsList.add(pc); // add the center point
+        for(int k = 1; k < numOfPoints; k++) {
+            var randomPoint = pc;
+            double x, y;
+            do{
+                x = random(-radius, radius);
+                y = random(-radius, radius);
+            }while(x*x + y*y >= radius*radius);
+
+            if(!isZero(x)){
+                randomPoint = randomPoint.add(normal1.scale(x));
+            }
+            if(!isZero(y)){
+                randomPoint = randomPoint.add(normal2.scale(y));
+            }
+            randomPointsList.add(randomPoint);
+        }
         return randomPointsList;
     }
 
@@ -158,4 +183,6 @@ public class Point3D {
     public double getZ() {
         return _z._coord;
     }
+
+
 }

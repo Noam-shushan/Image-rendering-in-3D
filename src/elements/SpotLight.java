@@ -56,7 +56,7 @@ public class SpotLight extends PointLight{
      * @param focus the new focus
      * @return this SpotLight
      */
-    public SpotLight setFocus(double focus) {
+    public PointLight setFocus(double focus) {
         _focus = focus;
         return this;
     }

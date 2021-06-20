@@ -1,4 +1,8 @@
 package renderer;
+
+import java.awt.*;
+import java.awt.event.InputEvent;
+
 /**
  * Pixel is an internal helper class whose objects are associated with a Render
  * object that they are generated in scope of. It is used for multithreading in
@@ -34,7 +38,7 @@ class Pixel {
         this.nextCounter = this.pixels / 100;
         this.render = render;
         if (this.render.print){
-            System.out.printf("\r %02d%%", this.percents);
+            System.out.println(String.format("%02d%%", this.percents));
         }
     }
 
@@ -99,16 +103,19 @@ class Pixel {
      */
     public boolean nextPixel(Pixel target) {
         int percent = nextP(target);
-        if (render.print && percent > 0)
+        if (render.print && percent > 0){
             synchronized (this) {
                 notifyAll();
             }
-        if (percent >= 0)
+        }
+        if (percent >= 0){
             return true;
-        if (render.print)
+        }
+        if (render.print) {
             synchronized (this) {
                 notifyAll();
             }
+        }
         return false;
     }
 
@@ -116,15 +123,15 @@ class Pixel {
      * Debug print of progress percentage - must be run from the main thread
      */
     public void print() {
-        if (render.print)
+        if (render.print) {
             while (this.percents < 100)
                 try {
                     synchronized (this) {
                         wait();
                     }
-                    System.out.printf("\r %02d%%", this.percents);
+                    System.out.println(String.format("%02d%%", this.percents));
                     System.out.flush();
-                } catch (Exception e) {
-                }
+                } catch (Exception e) { }
+        }
     }
 }

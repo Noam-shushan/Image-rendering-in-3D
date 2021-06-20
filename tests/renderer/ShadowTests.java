@@ -164,7 +164,7 @@ public class ShadowTests {
                 .setCamera(camera) //
                 .setRayTracer(new RayTracerBasic(scene))
                 .setMultithreading(10)
-                .setNumOfRaysInBean(50);
+                .setAntiAliasing(50);
         render.renderImage();
         render.writeToImage();
     }

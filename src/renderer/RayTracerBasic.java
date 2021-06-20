@@ -3,6 +3,7 @@ package renderer;
 import static geometries.Intersectable.GeoPoint;
 
 import elements.LightSource;
+import geometries.Plane;
 import primitives.*;
 
 import static primitives.Util.*;
@@ -23,7 +24,7 @@ public class RayTracerBasic extends RayTracerBase {
      * The max level of the recursion attending to get <br/>
      * reflection and transparency of the geometries that goes to other geometries
      */
-    private static final int MAX_CALC_COLOR_LEVEL = 6;
+    private static final int MAX_CALC_COLOR_LEVEL = 4;
 
     /**
      * The minimal effect of a color factor for transparency and reflection <br/>
@@ -31,10 +32,17 @@ public class RayTracerBasic extends RayTracerBase {
      */
     private static final double MIN_CALC_COLOR_K = 0.001d;
 
+    private static final double MAX_DISTANCE_FOR_REFLECTION = 1000d;
+
     /**
      * starting value of the effect of a color factor for transparency and reflection
      */
     private static final double INITIAL_K = 1d;
+
+    /**
+     * radius of bean of rays around main ray of reflection and transparency
+     */
+    private double _beanRadiusForGlossy;
 
     /**
      * image improvements for glossy of the emission color of the geometry
@@ -94,11 +102,30 @@ public class RayTracerBasic extends RayTracerBase {
     }
 
     /**
+     * setter for the radius of bean to create around main ray af reflection and transparency
+     * @param beanRadiusForGlossy the new radius
+     * @throws IllegalArgumentException if the radius <= 0
+     * @return this rayTracer
+     */
+    public RayTracerBasic setBeanRadiusForGlossy(double beanRadiusForGlossy) {
+        if(beanRadiusForGlossy <= 0){
+            throw new IllegalArgumentException("bean radius can not be lower or equal to 0");
+        }
+
+        _beanRadiusForGlossy = beanRadiusForGlossy;
+        return this;
+    }
+
+    /**
      * setter for the number of rays in bean
      * @param numOfRaysInBean the new number of rays in bean
+     * @throws IllegalArgumentException if numOfRaysInBean <= 0
      * @return this render
      */
     public RayTracerBasic setNumOfRaysInBean(int numOfRaysInBean) {
+        if(numOfRaysInBean <= 0) {
+            throw new IllegalArgumentException("Number of rays must be greater then 0");
+        }
         _numOfRaysInBean = numOfRaysInBean;
         return this;
     }
@@ -194,7 +221,7 @@ public class RayTracerBasic extends RayTracerBase {
         if (kkr > MIN_CALC_COLOR_K) { // Recursion stop conditions
             // create reflected bean to calculate the color of reflection influences of the geometry
             var bean = constructReflectedBean(geoPoint, inRay);
-            color = color.add(calcGlobalEffectOfBean(bean, level, kr, kkr));
+            color =  color.add(calcGlobalEffectOfBean(bean, level, kr, kkr));
         }
 
         double kt = material.kT;
@@ -218,32 +245,22 @@ public class RayTracerBasic extends RayTracerBase {
      */
     private Color calcGlobalEffectOfBean(List<Ray> bean, int level,  double kx, double kkx){
         List<Color> colors = new LinkedList<>();
-        for(var ray : bean){
+
+        // add the color at the intersection point of each ray in the bean
+        for(var ray : bean) {
             GeoPoint geoPoint = findClosestIntersection(ray);
-            if(geoPoint != null){
+            if(geoPoint != null) {
                 colors.add(calcColor(geoPoint, ray, level - 1, kkx).scale(kx));
             }
         }
+
         if(colors.size() < 1){
-            return Color.BLACK;
+            return _scene.background;
         }
         if(colors.size() == 1){
             return colors.get(0);
         }
-        return average(colors);
-    }
-
-    /**
-     * calculator the average of list of colors
-     * @param colors the list of colors
-     * @return the average color
-     */
-    private Color average(List<Color> colors) {
-        Color result = Color.BLACK;
-        for(var color : colors){
-            result = result.add(color);
-        }
-        return result.reduce(colors.size());
+        return Color.average(colors);
     }
 
     /**
@@ -255,17 +272,19 @@ public class RayTracerBasic extends RayTracerBase {
      * @return transparency ray
      */
     private List<Ray> constructRefractedBean(GeoPoint geoPoint, Ray inRay) {
-        Ray mainRefractedRay = new Ray(geoPoint.point, inRay.getDir(), geoPoint.normal);
+        Vector n = geoPoint.normal;
+        Vector v = inRay.getDir();
+        Ray mainRefractedRay = new Ray(geoPoint.point, v, n);
+
         if(_diffuse){
-            // Checks for intersections with the refracted ray
-            GeoPoint refractedPoint = findClosestIntersection(mainRefractedRay);
-            if(refractedPoint != null){
-                return constructBean(mainRefractedRay, refractedPoint.point);
-            }
-            else {
-                return List.of(mainRefractedRay);
-            }
-        } else{
+            // create bean of rays around the main refracted ray
+            // if the angle between the normal of the geometry and the reflected ray
+            // is positive it mean that the ray is under the geometry and we don't take this ray
+            // in the consideration
+            return mainRefractedRay.createBeanForGlossy(_numOfRaysInBean, 1,
+                    dir -> n.dotProduct(v) * dir.dotProduct(n) < 0);
+        }
+        else { // not bean but single ray
             return List.of(mainRefractedRay);
         }
     }
@@ -279,48 +298,41 @@ public class RayTracerBasic extends RayTracerBase {
      */
     private List<Ray> constructReflectedBean(GeoPoint geoPoint, Ray inRay) {
         Vector v = inRay.getDir();
-        Vector r = null;
-        try {
-            double vn = v.dotProduct(geoPoint.normal);
-            // r = v - 2*(v * n) * n
-            r = v.subtract(geoPoint.normal.scale(2d * vn)).normalized();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+        Vector n = geoPoint.normal;
+        double nv = alignZero(v.dotProduct(n));
+        // r = v - 2*(v * n) * n
+        Vector r = v.subtract(n.scale(2d * nv)).normalized();
+
         // create reflected ray to calculate the color of reflection of the geometry
-        Ray mainReflectedRay = new Ray(geoPoint.point, r, geoPoint.normal);
+        Ray mainReflectedRay = new Ray(geoPoint.point, r, n);
         if(_glossy){
-            // Checks for intersections with the reflection ray
-            GeoPoint reflectedPoint = findClosestIntersection(mainReflectedRay);
-            if(reflectedPoint != null){
-                return constructBean(mainReflectedRay, reflectedPoint.point);
-            }
-            else{
-                return List.of(mainReflectedRay);
-            }
-        } else{
+            // create bean of rays around the reflected ray
+            // if the angle between the normal of the geometry and the reflected ray
+            // is negative it mean that the ray is blow the geometry and we don't take this ray
+            // in the consideration
+            return mainReflectedRay.createBeanForGlossy(_numOfRaysInBean, 1,
+                    dir -> nv * dir.dotProduct(n) > 0);
+        }
+        else{ // not bean but single ray
             return List.of(mainReflectedRay);
         }
     }
 
     /**
-     * construct bean of rays around the direction of the target point and at the beginning of the main ray
-     * @param mainRay the main ray
-     * @param targetPoint the target point to create rays around her
-     * @return list of rays that start at the origen of the ray and gos around the target point
+     * Scattering radius for bean of random rays
+     * @param distance the distance between the geometry and the reflection body
+     * @return the scattering radius of the bean
      */
-    private List<Ray> constructBean(Ray mainRay, Point3D targetPoint) {
-        var randomPoints = targetPoint.createRandomPointsAround(_numOfRaysInBean, 3);
-        var pOrigen = mainRay.getP0();
-
-        List<Ray> bean = new LinkedList<>();
-        for(var p : randomPoints){
-            Vector dir = p.subtract(pOrigen);
-            bean.add(new Ray(pOrigen, dir));
+    private double scatteringRadius(double distance) {
+        // if the geometry is very close to the glossy geometry
+        // there is no effect of creating a bean of rays
+        if(isZero(distance) || distance >= MAX_DISTANCE_FOR_REFLECTION){
+            return 0; // in this case the point generator will not create bean but a single ray
         }
-        return bean;
+
+        return random(5, 10);
     }
+
 
     /**
      * find closest intersection to the starting point of the ray
