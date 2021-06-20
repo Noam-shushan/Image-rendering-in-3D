@@ -5,38 +5,35 @@ import java.util.LinkedList;
 import java.util.List;
 import static primitives.Util.*;
 
-//TODO need to think of this
+/**
+ * this class represent a box in with 6 corners of
+ * rectangle that create by polygons and the depth of the box
+ */
 public class Box extends Geometry{
+
     /**
-     *
+     * the corners of the box is 6 polygons for each side of the box
      */
     final Polygon[] _corners;
 
+    /**
+     * depth of the box
+     */
     private double _depth;
 
+    /**
+     * number of corners in the box
+     */
     private static final int NUMBER_OF_CORNERS = 6;
-    private final int NUMBER_OF_POINTS = 8;
 
     /**
-     *
-     * @param points
+     * constructor for Box
+     * @param p1 first point
+     * @param p2 second point
+     * @param p3 third point
+     * @param p4 forth point
+     * @param depth the depth of the box
      */
-    public Box(Point3D... points) {
-        if(points == null){
-            throw new IllegalArgumentException("no points entered");
-        }
-        if(points.length != NUMBER_OF_POINTS){
-            throw new IllegalArgumentException("Box most have 8 points");
-        }
-        _corners = new Polygon[NUMBER_OF_CORNERS];
-        _corners[0] = new Polygon(points[0], points[1], points[2], points[3]);
-        _corners[1] = new Polygon(points[4], points[5], points[6], points[7]);
-        _corners[2] = new Polygon(points[0], points[3], points[7], points[4]);
-        _corners[3] = new Polygon(points[0], points[1], points[5], points[4]);
-        _corners[4] = new Polygon(points[1], points[2], points[6], points[5]);
-        _corners[5] = new Polygon(points[2], points[3], points[7], points[6]);
-    }
-
     public Box(Point3D p1, Point3D p2, Point3D p3, Point3D p4, double depth){
         _corners = new Polygon[NUMBER_OF_CORNERS];
         try{
