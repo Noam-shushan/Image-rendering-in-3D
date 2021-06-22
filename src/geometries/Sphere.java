@@ -26,7 +26,7 @@ public class Sphere extends Geometry {
      * Constructor for the Sphere class
      * @param center the center point of the sphere
      * @param radius the radius of the sphere
-     * @throws IllegalArgumentException if radius < 0
+     * @throws IllegalArgumentException if radius is lower then 0
      */
     public Sphere(double radius, Point3D center) {
         if(radius < 0){

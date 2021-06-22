@@ -36,7 +36,7 @@ public class Cylinder extends Tube{
      * @param axisRay the ray of the Tube
      * @param radius the radius of the Tube
      * @param height the height of the cylinder
-     * @throws IllegalArgumentException if radius < 0 or the height < 0
+     * @throws IllegalArgumentException if radius is lower then 0 or the height is lower then 0
      */
     public Cylinder(double radius, Ray axisRay, double height) {
         super(radius ,axisRay);

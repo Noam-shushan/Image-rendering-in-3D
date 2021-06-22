@@ -104,4 +104,13 @@ class VectorTest {
         if (u == v)
             fail("ERROR: normalizated() function does not create a new vector");
     }
+
+    @Test
+    void createVerticalVector() {
+        Vector v1 = new Vector(1,1,0);
+        Vector vv = v1.createVerticalVector();
+
+        Vector v2 = new Vector(1, 0,0);
+        assertEquals(new Vector(0,1,0), v2.createVerticalVector());
+    }
 }

@@ -39,16 +39,17 @@ public class Box extends Geometry{
         try{
             _corners[0] = new Polygon(p1, p2, p3, p4);
         } catch (IllegalArgumentException ex){
-            throw new IllegalArgumentException("ca not create Box because" + ex.getMessage());
+            throw new IllegalArgumentException("can not create Box because" + ex.getMessage());
         }
         _depth = depth;
         Vector n = _corners[0]._plane._normal;
         Vector scaleVector = n.scale(_depth);
-
+        // set the next 4 points of the box
         Point3D p5 = p1.add(scaleVector);
         Point3D p6 = p2.add(scaleVector);
         Point3D p7 = p3.add(scaleVector);
         Point3D p8 = p4.add(scaleVector);
+        // set the corners of the box
         _corners[1] = new Polygon(p1, p5, p6, p2);
         _corners[2] = new Polygon(p2, p6, p7, p3);
         _corners[3] = new Polygon(p3, p7, p8, p4);

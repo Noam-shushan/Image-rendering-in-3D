@@ -1,7 +1,7 @@
 package renderer;
 
 import elements.Camera;
-import primitives.Color;
+import primitives.*;
 import primitives.Ray;
 
 import java.util.LinkedList;
@@ -33,8 +33,15 @@ public class Render {
      * number of threads
      */
     private int _threadsCount = 0;
-    private static final int SPARE_THREADS = 2; // Spare threads if trying to use all the cores
-    boolean print = false; // printing progress percentage
+
+    /**
+     * Spare threads if trying to use all the cores
+     */
+    private static final int SPARE_THREADS = 3;
+    /**
+     * flag of printing progress percentage
+     */
+    boolean print = false;
 
     /**
      * the amount of rays in bean for anti aliasing improvement
@@ -185,7 +192,7 @@ public class Render {
     /**
      * setter for the number of rays in bean for anti aliasing improvement
      * @param numOfRaysInBean the new number of rays in bean
-     * @throws IllegalArgumentException if numOfRaysInBean <= 0
+     * @throws IllegalArgumentException if numOfRaysInBean is lower then 0
      * @return this render
      */
     public Render setAntiAliasing(int numOfRaysInBean) {
@@ -201,7 +208,7 @@ public class Render {
      * - if the parameter is 0 - number of cores less 2 is taken
      *
      * @param threads number of threads
-     * @throws IllegalArgumentException if threads < 0
+     * @throws IllegalArgumentException if threads is lower then 0
      * @return the Render object itself
      */
     public Render setMultithreading(int threads) {

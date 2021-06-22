@@ -109,7 +109,7 @@ public class MyImages {
                 .setImageWriter(new ImageWriter("Tennis table", 500, 500))
                 .setCamera(camera)
                 .setRayTracer(new RayTracerBasic(scene))
-                .setMultithreading(6)
+                .setMultithreading(3)
                 .setAntiAliasing(50)
                 .setDebugPrint();
         render.renderImage();
@@ -281,7 +281,7 @@ public class MyImages {
 //                        .setDiffuse()
 //                        .setNumOfRaysInBean(60)
                 )
-                //.setAntiAliasing(10)
+                .setAntiAliasing(60)
                 .setMultithreading(3)
                 .setDebugPrint()
                 ;
@@ -342,6 +342,7 @@ public class MyImages {
                         .setGlossy()
                         .setDiffuse()
                         .setNumOfRaysInBean(50)
+                        .setBeanRadiusForGlossy(30)
                 )
                 //.setAntiAliasing(50)
                 .setMultithreading(3)

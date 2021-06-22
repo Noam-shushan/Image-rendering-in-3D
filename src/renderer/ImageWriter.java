@@ -18,12 +18,23 @@ import javax.imageio.*;
  * @author Dan
  */
 public class ImageWriter {
+    /**
+     * number of pixel in the x axis
+     */
     private int nX;
+
+    /**
+     * number of pixel in the y axis
+     */
     private int nY;
 
     private static final String FOLDER_PATH = System.getProperty("user.dir") + "/images";
 
     private BufferedImage image;
+
+    /**
+     * the name of the image file
+     */
     private String imageName;
 
     private Logger logger = Logger.getLogger("ImageWriter");

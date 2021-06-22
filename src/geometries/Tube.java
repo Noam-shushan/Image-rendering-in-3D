@@ -26,7 +26,7 @@ public class Tube extends Geometry {
      * Constructor for Tube
      * @param axisRay the ray of the tube
      * @param radius the radius of the tube
-     * @throws IllegalArgumentException if radius < 0
+     * @throws IllegalArgumentException if radius is lower then 0
      */
     public Tube(double radius, Ray axisRay) {
         if(radius < 0){
@@ -153,7 +153,6 @@ public class Tube extends Geometry {
                     new GeoPoint(this, ray.getPoint(t2)))
                     : List.of(new GeoPoint(this, ray.getPoint(t2)));
         } catch (IllegalArgumentException e) {
-            e.printStackTrace();
             return null;
         }
     }

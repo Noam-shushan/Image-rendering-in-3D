@@ -53,10 +53,18 @@ public class SceneDescriptor {
         return _sceneResult;
     }
 
+    /**
+     * descriptor the background from the xml
+     * @return the color of the background
+     */
     private Color getBackground(){
         return getColor(_rootElement.getAttribute("background-color"));
     }
 
+    /**
+     * descriptor the ambient light from the xml
+     * @return the ambient light of the scene
+     */
     private AmbientLight getAmbientLight(){
         var ambientLightElement = (Element) _rootElement.getElementsByTagName("ambient-light").item(0);
         var color = ambientLightElement.getAttribute("color");
@@ -67,6 +75,10 @@ public class SceneDescriptor {
         return new AmbientLight(getColor(color), Double.parseDouble(ka));
     }
 
+    /**
+     * descriptor the geometries from the xml file
+     * @return the geometries of the scene
+     */
     private Geometries getGeometries(){
         Geometries geometries = new Geometries();
         var geometriesNodeList = _rootElement.getElementsByTagName("geometries").item(0).getChildNodes();
@@ -79,6 +91,11 @@ public class SceneDescriptor {
         return geometries;
     }
 
+    /**
+     * descriptor for the geometry from element node of the geometries
+     * @param elementNode element node of some geometry in the xml file
+     * @return the geometry
+     */
     private Geometry getGeometry(Element elementNode){
         Geometry result = null;
         switch (elementNode.getNodeName()){
@@ -101,7 +118,9 @@ public class SceneDescriptor {
             case "polygon" :
                 List<Point3D> vertices = new LinkedList<>();
 
-                var verticesElements = elementNode.getElementsByTagName("vertices").item(0).getChildNodes();
+                var verticesElements = elementNode.getElementsByTagName("vertices")
+                        .item(0)
+                        .getChildNodes();
                 for(int i = 0; i < verticesElements.getLength(); i++){
                     var pElement = verticesElements.item(i);
                     if(pElement.getNodeType() == Node.ATTRIBUTE_NODE){
@@ -124,16 +143,31 @@ public class SceneDescriptor {
         return result;
     }
 
+    /**
+     * get point from the format of the points in the xml file
+     * @param pointFormat the format of point in the xml file
+     * @return the Point3D object
+     */
     private Point3D getPoint(String pointFormat){
         String[] point = pointFormat.split(" ");
         return new Point3D(Double.parseDouble(point[0]), Double.parseDouble(point[1]), Double.parseDouble(point[2]));
     }
 
+    /**
+     * get color from the format of the colors in the xml file
+     * @param colorFormat the format of color in the xml file
+     * @return the Color object
+     */
     private Color getColor(String colorFormat){
         var p = getPoint(colorFormat);
         return new Color(p.getX(), p.getY(), p.getZ());
     }
 
+    /**
+     * get vector from the format of the vectors in the xml file
+     * @param pointFormat the format of point in the xml file
+     * @return the Vector object
+     */
     private  Vector getVector(String pointFormat){
         return new Vector(getPoint(pointFormat));
     }

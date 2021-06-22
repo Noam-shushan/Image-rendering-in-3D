@@ -21,7 +21,10 @@ public class Ray {
      */
     final Vector _dir;
 
-    private static final double DELTA = 0.1d; // constants for size moving first rays for shading rays
+    /**
+     * constants for size moving first rays for shading rays
+     */
+    private static final double DELTA = 0.1d;
 
     /**
      * Constructor for Ray class
@@ -65,8 +68,9 @@ public class Ray {
 
     /**
      * p = p0 + tv
-     * @param t scalar for interaction point with some geometry
-     * @return p
+     * v is the direction of the ray, p0 is the stating point of the ray
+     * @param t scalar
+     * @return point on the ray
      */
     public Point3D getPoint(double t){
         return _p0.add(_dir.scale(t));
@@ -128,20 +132,18 @@ public class Ray {
         // as constants 1 to get simple calculation of the opening angle of the bean
         // that way we create random point around some point the is
         // distance from the stating point of the ray is 1
-        var pointOnTheRay = _p0.add(_dir);
-
+        var pointOnTheRay = this.getPoint(1);
         // first normal to the ray
         var vX = _dir.createVerticalVector();
         // second normal to the ray
         var vY = _dir.crossProduct(vX)
-                .normalized();
-
+                .normalize();
         // random points around the point on the ray
         var randomPoints = pointOnTheRay.createRandomPointsAround(numOfRays, angle,
                 vX, vY);
         List<Ray> bean = new LinkedList<>();
         for(var p : randomPoints){
-            Vector dir = p.subtract(_p0);
+            Vector dir = p.subtract(_p0).normalize();
              // some condition on the direction of the rays
             if(predicate.test(dir)){
                 bean.add(new Ray(_p0, dir));

@@ -98,7 +98,7 @@ public class Point3D {
      * create random point around this point in circles.<br/>
      * the points wile be in the same plane of z = this.z.
      * @param numOfPoints number of points to create
-     * @param radius the radius of the circle that we create the point on him
+     * @param radius the radius of the circle that we create the point inside him
      * @see <a href="https://stackoverflow.com/questions/5837572/generate-a-random-point-within-a-circle-uniformly/50746409#50746409">The idea behind the algorithm</a>
      * @return list of random point around this point
      */
@@ -118,31 +118,41 @@ public class Point3D {
             double y = alignZero(_y._coord + r * sinTheta);
 
             Point3D randomPoint = new Point3D(x, y, _z._coord);
-            // check if the point is already wes created
-            if (!randomPointsList.contains(randomPoint)) {
-                randomPointsList.add(randomPoint);
-            }
+            randomPointsList.add(randomPoint);
         }
         return randomPointsList;
     }
 
-    public List<Point3D> createRandomPointsAround(int numOfPoints, double radius, Vector normal1, Vector normal2) {
+    /**
+     * create random point around this point in circles.<br/>
+     * @param numOfPoints number of points to create
+     * @param radius the radius of the circle that we create the point inside him
+     * @param vX x axis direction
+     * @param vY y axis direction
+     * @see <a href="https://stackoverflow.com/questions/5837572/generate-a-random-point-within-a-circle-uniformly/50746409#50746409">The idea behind the algorithm</a>
+     * @return list of random points
+     */
+    public List<Point3D> createRandomPointsAround(int numOfPoints, double radius, Vector vX, Vector vY) {
         List<Point3D> randomPointsList = new LinkedList<>();
         var pc = new Point3D(this.getX(), this.getY(), this.getY());
         randomPointsList.add(pc); // add the center point
         for(int k = 1; k < numOfPoints; k++) {
             var randomPoint = pc;
-            double x, y;
-            do{
-                x = random(-radius, radius);
-                y = random(-radius, radius);
-            }while(x*x + y*y >= radius*radius);
+            // random radius
+            double r = Math.sqrt(rand.nextDouble()) * radius;
+            // random angle
+            double cosTheta = random(-1, 1);
+            // sin(theta) = sqrt(1 - cos(theta)^2)
+            double sinTheta = Math.sqrt(1 - cosTheta * cosTheta);
+            // (x, y) = (xCenter + r*cos(theta), yCenter + r*sin(theta)
+            double x = r * cosTheta;
+            double y = r * sinTheta;
 
             if(!isZero(x)){
-                randomPoint = randomPoint.add(normal1.scale(x));
+                randomPoint = randomPoint.add(vX.scale(x));
             }
-            if(!isZero(y)){
-                randomPoint = randomPoint.add(normal2.scale(y));
+            if(!isZero(y)) {
+                randomPoint = randomPoint.add(vY.scale(y));
             }
             randomPointsList.add(randomPoint);
         }

@@ -29,7 +29,7 @@ public class Triangle extends Polygon {
      * n2 = normalize(v2xv3) <br/>
      * n3 = normalize(v3xv1) <br/>
      * let v be the direction of the rey
-     * if v*ni (1 <= i < 3) is have the sing (+/-)
+     * if v*ni (i between 1 to 3) is have the sing (+/-)
      * there is intersection points with the triangle
      * @param ray ray that cross the triangle
      * @return list of intersection points that were found

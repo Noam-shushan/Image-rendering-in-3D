@@ -24,15 +24,13 @@ public class RayTracerBasic extends RayTracerBase {
      * The max level of the recursion attending to get <br/>
      * reflection and transparency of the geometries that goes to other geometries
      */
-    private static final int MAX_CALC_COLOR_LEVEL = 4;
+    private static final int MAX_CALC_COLOR_LEVEL = 5;
 
     /**
      * The minimal effect of a color factor for transparency and reflection <br/>
      * Below that there are no longer any color differences
      */
     private static final double MIN_CALC_COLOR_K = 0.001d;
-
-    private static final double MAX_DISTANCE_FOR_REFLECTION = 1000d;
 
     /**
      * starting value of the effect of a color factor for transparency and reflection
@@ -42,7 +40,7 @@ public class RayTracerBasic extends RayTracerBase {
     /**
      * radius of bean of rays around main ray of reflection and transparency
      */
-    private double _beanRadiusForGlossy;
+    private double _beanRadiusForGlossy = 30;
 
     /**
      * image improvements for glossy of the emission color of the geometry
@@ -84,50 +82,17 @@ public class RayTracerBasic extends RayTracerBase {
     }
 
     /**
-     * Add image improvements for diffuse of the emission color of the geometry
-     * @return this RayTracer
+     * find closest intersection to the starting point of the ray
+     * @param ray the ray that intersect with the geometries of the scene
+     * @return the GeoPoint that is point is the closest point to the starting point of the ray
      */
-    public RayTracerBasic setDiffuse(){
-        _diffuse = true;
-        return this;
-    }
-
-    /**
-     * Add image improvements for glossy of the emission color of the geometry
-     * @return this RayTracer
-     */
-    public RayTracerBasic setGlossy(){
-        _glossy = true;
-        return this;
-    }
-
-    /**
-     * setter for the radius of bean to create around main ray af reflection and transparency
-     * @param beanRadiusForGlossy the new radius
-     * @throws IllegalArgumentException if the radius <= 0
-     * @return this rayTracer
-     */
-    public RayTracerBasic setBeanRadiusForGlossy(double beanRadiusForGlossy) {
-        if(beanRadiusForGlossy <= 0){
-            throw new IllegalArgumentException("bean radius can not be lower or equal to 0");
+    private GeoPoint findClosestIntersection(Ray ray) {
+        if(ray == null){
+            return null;
         }
 
-        _beanRadiusForGlossy = beanRadiusForGlossy;
-        return this;
-    }
-
-    /**
-     * setter for the number of rays in bean
-     * @param numOfRaysInBean the new number of rays in bean
-     * @throws IllegalArgumentException if numOfRaysInBean <= 0
-     * @return this render
-     */
-    public RayTracerBasic setNumOfRaysInBean(int numOfRaysInBean) {
-        if(numOfRaysInBean <= 0) {
-            throw new IllegalArgumentException("Number of rays must be greater then 0");
-        }
-        _numOfRaysInBean = numOfRaysInBean;
-        return this;
+        List<GeoPoint> points = _scene.geometries.findGeoIntersections(ray);
+        return ray.findClosestGeoPoint(points);
     }
 
     /**
@@ -244,23 +209,14 @@ public class RayTracerBasic extends RayTracerBase {
      * @return the average color of the bean
      */
     private Color calcGlobalEffectOfBean(List<Ray> bean, int level,  double kx, double kkx){
-        List<Color> colors = new LinkedList<>();
-
+        Color result = Color.BLACK;
         // add the color at the intersection point of each ray in the bean
         for(var ray : bean) {
-            GeoPoint geoPoint = findClosestIntersection(ray);
-            if(geoPoint != null) {
-                colors.add(calcColor(geoPoint, ray, level - 1, kkx).scale(kx));
-            }
+            GeoPoint gp = findClosestIntersection(ray);
+            result = result.add((gp == null ? _scene.background : calcColor(gp ,ray, level - 1, kkx))
+                    .scale(kx));
         }
-
-        if(colors.size() < 1){
-            return _scene.background;
-        }
-        if(colors.size() == 1){
-            return colors.get(0);
-        }
-        return Color.average(colors);
+        return result.reduce(_numOfRaysInBean);
     }
 
     /**
@@ -281,7 +237,7 @@ public class RayTracerBasic extends RayTracerBase {
             // if the angle between the normal of the geometry and the reflected ray
             // is positive it mean that the ray is under the geometry and we don't take this ray
             // in the consideration
-            return mainRefractedRay.createBeanForGlossy(_numOfRaysInBean, 1,
+            return mainRefractedRay.createBeanForGlossy(_numOfRaysInBean, _beanRadiusForGlossy,
                     dir -> n.dotProduct(v) * dir.dotProduct(n) < 0);
         }
         else { // not bean but single ray
@@ -310,42 +266,12 @@ public class RayTracerBasic extends RayTracerBase {
             // if the angle between the normal of the geometry and the reflected ray
             // is negative it mean that the ray is blow the geometry and we don't take this ray
             // in the consideration
-            return mainReflectedRay.createBeanForGlossy(_numOfRaysInBean, 1,
+            return mainReflectedRay.createBeanForGlossy(_numOfRaysInBean, _beanRadiusForGlossy,
                     dir -> nv * dir.dotProduct(n) > 0);
         }
         else{ // not bean but single ray
             return List.of(mainReflectedRay);
         }
-    }
-
-    /**
-     * Scattering radius for bean of random rays
-     * @param distance the distance between the geometry and the reflection body
-     * @return the scattering radius of the bean
-     */
-    private double scatteringRadius(double distance) {
-        // if the geometry is very close to the glossy geometry
-        // there is no effect of creating a bean of rays
-        if(isZero(distance) || distance >= MAX_DISTANCE_FOR_REFLECTION){
-            return 0; // in this case the point generator will not create bean but a single ray
-        }
-
-        return random(5, 10);
-    }
-
-
-    /**
-     * find closest intersection to the starting point of the ray
-     * @param ray the ray that intersect with the geometries of the scene
-     * @return the GeoPoint that is point is the closest point to the starting point of the ray
-     */
-    private GeoPoint findClosestIntersection(Ray ray) {
-        if(ray == null){
-            return null;
-        }
-
-        List<GeoPoint> points = _scene.geometries.findGeoIntersections(ray);
-        return ray.findClosestGeoPoint(points);
     }
 
     /**
@@ -416,5 +342,52 @@ public class RayTracerBasic extends RayTracerBase {
     private Color calcDiffusive(double kd, double nl, Color lightIntensity) {
         double factor = kd * Math.abs(nl);
         return lightIntensity.scale(factor);
+    }
+
+    /**
+     * Add image improvements for diffuse of the emission color of the geometry
+     * @return this RayTracer
+     */
+    public RayTracerBasic setDiffuse(){
+        _diffuse = true;
+        return this;
+    }
+
+    /**
+     * Add image improvements for glossy of the emission color of the geometry
+     * @return this RayTracer
+     */
+    public RayTracerBasic setGlossy(){
+        _glossy = true;
+        return this;
+    }
+
+    /**
+     * setter for the radius of bean to create around main ray af reflection and transparency
+     * @param beanRadiusForGlossy the new radius
+     * @throws IllegalArgumentException if the radius is lower then 0
+     * @return this rayTracer
+     */
+    public RayTracerBasic setBeanRadiusForGlossy(double beanRadiusForGlossy) {
+        if(beanRadiusForGlossy <= 0){
+            throw new IllegalArgumentException("bean radius can not be lower or equal to 0");
+        }
+
+        _beanRadiusForGlossy = beanRadiusForGlossy;
+        return this;
+    }
+
+    /**
+     * setter for the number of rays in bean
+     * @param numOfRaysInBean the new number of rays in bean
+     * @throws IllegalArgumentException if numOfRaysInBean is lower then 0
+     * @return this render
+     */
+    public RayTracerBasic setNumOfRaysInBean(int numOfRaysInBean) {
+        if(numOfRaysInBean <= 0) {
+            throw new IllegalArgumentException("Number of rays must be greater then 0");
+        }
+        _numOfRaysInBean = numOfRaysInBean;
+        return this;
     }
 }

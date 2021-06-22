@@ -135,12 +135,13 @@ public class Vector {
      * @return vertical vector to this vector
      */
     public Vector createVerticalVector(){
-        double y = _head.getY(),
+        double x = _head.getX(),
+                y = _head.getY(),
                 z = _head.getZ();
         if(y == 0 && z == 0){
             return new Vector(0,1,0);
         }
-        return new Vector(0, -z, y)
+        return new Vector(-y, x, 0)
                 .normalize();
     }
 
@@ -189,7 +190,7 @@ public class Vector {
         }
         else {
             vRot = this.scale(cosTheta);
-            if (sinTheta != 0d && !isZero(k.dotProduct(this))) {
+            if (sinTheta != 0d) {
                 vRot = vRot.add(k.crossProduct(this).scale(sinTheta));
             }
         }
