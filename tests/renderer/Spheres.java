@@ -56,7 +56,7 @@ public class Spheres {
     void createImageDifferentAngle(){
         createScene();
         Render render = new Render()
-                .setCamera(camera.moveCamera(new Point3D(10, 150, 0), new Point3D(50, 25, 30)))
+                .setCamera(camera.moveCamera(new Point3D(0, 300, 0), new Point3D(50, 0, 30)))
                 .setRayTracer(new RayTracerBasic(scene))
                 .setImageWriter(new ImageWriter("small spheres different angle",500, 500))
                 .setMultithreading(3)
@@ -240,5 +240,17 @@ public class Spheres {
             }
             z -= 10;
         }
+    }
+
+    @Test
+    void ff(){
+        var n = new Vector(0,1,0);
+        var v = new Vector(1, 1, 0).normalized();
+        double nv = alignZero(v.dotProduct(n));
+        // r = v - 2*(v * n) * n
+        Vector r = v.subtract(n.scale(2d * nv)).normalized();
+        System.out.println(r);
+        System.out.println(v);
+        System.out.println(new Vector(80.61,80.61,0).length());
     }
 }
